@@ -1,0 +1,34 @@
+* {margin:0; padding:0; }
+table.chess_table {
+ width:100%; min-width:8em; max-width:64em;
+ margin:0 auto; padding:0;
+ border-collapse: collapse; border-spacing: 0;
+ box-sizing: border-box;
+}
+
+table.chess_table tr td {
+ margin:0; padding:0;
+ font-size: 1em; font-family: serif; text-align: center;
+}
+
+table.chess_table tr:nth-child(odd) td:nth-child(odd),
+table.chess_table tr:nth-child(even) td:nth-child(even){
+ background-color: #aaa;
+}
+table.chess_table tr:nth-child(odd) td:nth-child(even),
+table.chess_table tr:nth-child(even) td:nth-child(odd){
+ background-color: #eee;
+}
+table.chess_table tr td.WP { /* blancs */
+ color: rgb(0, 0, 0);
+}
+table.chess_table tr td.BP { /* noirs */
+ color: rgb(0, 0, 0);
+}
+table.chess_table tr th {
+ color: black; font-size:1em;
+}
+
+table.chess_table tr th.turn_square {
+  border: 0.1em solid black;
+}

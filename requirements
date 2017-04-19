@@ -1,3 +1,10 @@
 -chess game using angular2 and java spring on server
 -there's no login
 -user should just create a new game and send the link to his friend
+
+
+
+//TODO NOW
+1. move board code to new board page/component
+2. create splash on app component with instructions and a play button
+3. implement play button: creates new game on server and redirects to board page
