@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +6,19 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app works!';
+  boardSize: number;
+  fontSize: number;
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.resize();
+    }, 1);
+  }
+
+  resize() {
+    this.boardSize = Math.min(window.innerHeight, window.innerWidth) - 20;
+    let squareSize = this.boardSize/8;
+    this.fontSize = Math.floor(100*squareSize/16/1.8)/100;
+  }
+
 }
