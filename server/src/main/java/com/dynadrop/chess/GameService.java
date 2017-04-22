@@ -7,19 +7,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CounterService {
-
-    private AtomicInteger counter = new AtomicInteger(0);
+public class GameService {
 
     @Autowired
-    CounterHandler counterHandler;
+    GameHandler counterHandler;
 
-    @Scheduled(fixedDelay = 1000)
+    /*@Scheduled(fixedDelay = 1000)
     public void sendCounterUpdate() {
         counterHandler.counterIncrementedCallback(counter.incrementAndGet());
-    }
+    }*/
 
     Integer getValue() {
-        return counter.get();
+        return 123;
     }
 }

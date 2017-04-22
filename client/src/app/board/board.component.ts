@@ -12,13 +12,16 @@ export class BoardComponent implements OnInit {
   gameId: number;
   private sub: any;
 
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  constructor(private route: ActivatedRoute, private router: Router) {
+    
+  }
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       this.gameId = +params['gameId'];
       console.log("gameId: "+this.gameId);
     });
+
   }
 
   ngAfterViewInit() {

@@ -13,11 +13,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     @Autowired
-    CounterHandler counterHandler;
+    GameHandler gameHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(counterHandler, "/counter").setAllowedOrigins("*");
+        registry.addHandler(gameHandler, "/game").setAllowedOrigins("*");
     }
 
 }
