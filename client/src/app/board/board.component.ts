@@ -9,19 +9,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class BoardComponent implements OnInit {
   boardSize: number;
   fontSize: number;
-  gameId: number;
+  gameUUID: string;
   private sub: any;
 
   constructor(private route: ActivatedRoute, private router: Router) {
-    
+
   }
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
-      this.gameId = +params['gameId'];
-      console.log("gameId: "+this.gameId);
+      this.gameUUID = params["gameUUID"];
+      console.log("gameUUID: "+this.gameUUID);
     });
-
   }
 
   ngAfterViewInit() {
@@ -35,4 +34,5 @@ export class BoardComponent implements OnInit {
     let squareSize = this.boardSize/8;
     this.fontSize = Math.floor(100*squareSize/16/1.8)/100;
   }
+
 }

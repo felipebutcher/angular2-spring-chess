@@ -10,7 +10,7 @@ const appRoutes : Routes = [
     component: SplashComponent
   },
   {
-    path: 'game/:gameId',
+    path: 'game/:gameUUID',
     component: BoardComponent
   }/*,
   {

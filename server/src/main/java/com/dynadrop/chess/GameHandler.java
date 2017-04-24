@@ -6,8 +6,11 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.google.gson.Gson;
 import com.dynadrop.chess.model.Game;
+import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
+import com.dynadrop.chess.websocket.bean.Message;
 import java.util.ArrayList;
+
 
 @Component
 public class GameHandler extends TextWebSocketHandler {
@@ -34,28 +37,29 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("newGame".equals(message.action)) {
               Player player = new Player();
               Game game = new Game(player, message.gameUUID);
-              System.out.println("Game uuid:"+game.getUUID());
               games.add(game);
               session.sendMessage(new TextMessage(gson.toJson(game)));
-          }else {
-              System.out.println("Received:" + textMessage.getPayload());
+          }else if ("move".equals(message.action)){
+              Game game = this.getGameByUUID(message.gameUUID);
+              Board board = game.getBoard();
+              if (board.movePiece(message.movement)) {
+                session.sendMessage(new TextMessage(gson.toJson(game)));
+              }else {
+                session.sendMessage(new TextMessage("{message:'invalid movement'}"));
+              }
           }
         }catch (Exception e) {
           e.printStackTrace();
         }
     }
 
-}
+    private Game getGameByUUID(String uuid) {
+      for(Game game: this.games) {
+        if (game.getUUID().equals(uuid)) {
+          return game;
+        }
+      }
+      return null;
+    }
 
-
-class Message {
-  public String action;
-  public Position positionFrom;
-  public Position prositionTo;
-  public String gameUUID;
-}
-
-class Position {
-  public int x;
-  public int y;
 }

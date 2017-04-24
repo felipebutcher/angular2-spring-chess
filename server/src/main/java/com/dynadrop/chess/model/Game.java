@@ -16,6 +16,10 @@ public class Game {
     this.uuid = uuid;
   }
 
+  public Board getBoard() {
+    return this.board;
+  }
+
   public Player getPlayer2() {
     return this.player2;
   }
