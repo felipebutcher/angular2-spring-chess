@@ -10,7 +10,7 @@ public class Bishop implements Piece {
 
   public Bishop(int color) {
     this.color = color;
-    this.htmlCode = "&#9819;";
+    this.htmlCode = "&#9821;";
   }
 
   public boolean validateMovement (Movement movement) {

@@ -13,6 +13,7 @@ public class Board {
   }
 
   private void initBoard() {
+    System.out.println("Board.initBoard()");
     this.rows = new Row[8];
     this.rows[0] = new Row(new Piece[]{
       new Rook(Piece.BLACK),

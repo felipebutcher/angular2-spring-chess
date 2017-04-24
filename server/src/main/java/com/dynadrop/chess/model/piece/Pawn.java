@@ -10,7 +10,7 @@ public class Pawn implements Piece {
 
   public Pawn(int color) {
     this.color = color;
-    this.htmlCode = "&#9819;";
+    this.htmlCode = "&#9823;";
   }
 
   public boolean validateMovement (Movement movement) {

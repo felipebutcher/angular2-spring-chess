@@ -1,21 +1,22 @@
 package com.dynadrop.chess.model;
 
+
 public class Row {
   Square[] squares;
 
   public Row(Piece[] pieces) {
     this.squares = new Square[8];
     int i=0;
-    for (Square square : this.squares) {
-      square = new Square(pieces[i]);
+    for (Piece piece: pieces) {
+      this.squares[i] = new Square(piece);
       i++;
     }
   }
 
   public Row() {
     this.squares = new Square[8];
-    for (Square square : this.squares) {
-      square = new Square(null);
+    for (int i=0; i<8; i++) {
+      this.squares[i] = new Square(null);
     }
   }
 

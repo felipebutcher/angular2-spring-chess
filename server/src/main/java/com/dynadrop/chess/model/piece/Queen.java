@@ -10,7 +10,7 @@ public class Queen implements Piece {
 
   public Queen(int color) {
     this.color = color;
-    this.htmlCode = "&#9821;";
+    this.htmlCode = "&#9819;";
   }
 
   public boolean validateMovement (Movement movement) {
