@@ -10,13 +10,14 @@ import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
 import com.dynadrop.chess.websocket.bean.Message;
 import java.util.ArrayList;
+import java.io.IOException;
 
 
 @Component
 public class GameHandler extends TextWebSocketHandler {
 
     //TODO REFACTOR ALL THIS SHIT
-    WebSocketSession session;
+    static ArrayList<WebSocketSession> sessions;
     static ArrayList<Game> games;
 
     @Override
@@ -26,7 +27,11 @@ public class GameHandler extends TextWebSocketHandler {
         games = new ArrayList<Game>();
       }
       System.out.println("Connection established");
-      this.session = session;
+      if (this.sessions == null) {
+        this.sessions = new ArrayList<WebSocketSession>();
+      }
+      this.sessions.add(session);
+      //this.session = session;
     }
 
     @Override
@@ -42,24 +47,33 @@ public class GameHandler extends TextWebSocketHandler {
             Player player = new Player();
             Game game = new Game(player, message.gameUUID);
             games.add(game);
-            System.out.println("GAMES ARRAY");
-            session.sendMessage(new TextMessage(gson.toJson(game)));
+            sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            //session.sendMessage(new TextMessage(gson.toJson(game)));
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             Board board = game.getBoard();
             if (board.movePiece(message.movement)) {
-              session.sendMessage(new TextMessage(gson.toJson(game)));
+              //session.sendMessage(new TextMessage(gson.toJson(game)));
+              sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
             }else {
-              session.sendMessage(new TextMessage("{message:'invalid movement'}"));
+              //session.sendMessage(new TextMessage("{message:'invalid movement'}"));
+              sendMessageToAllSessions(new TextMessage("{message:'invalid movement'}"));
             }
           }else if ("requestUpdate".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
-            System.out.println(gson.toJson(game));
-            session.sendMessage(new TextMessage(gson.toJson(game)));
+            //session.sendMessage(new TextMessage(gson.toJson(game)));
+            sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }
         }catch (Exception e) {
           e.printStackTrace();
         }
+    }
+
+    private void sendMessageToAllSessions(TextMessage message) throws IOException {
+      //TODO send only for sessions with same geme uuid
+      for (WebSocketSession session: this.sessions) {
+        session.sendMessage(message);
+      }
     }
 
     private Game getGameByUUID(String uuid) {
@@ -67,9 +81,7 @@ public class GameHandler extends TextWebSocketHandler {
       for(Game game: this.games) {
         System.out.println("game: " + game.getUUID());
         if (game.getUUID().equals(uuid)) {
-          System.out.println("FOUND GAME!!!");
-          Gson gson = new Gson();
-          System.out.println(gson.toJson(game));
+          System.out.println("game found.");
           return game;
         }
       }

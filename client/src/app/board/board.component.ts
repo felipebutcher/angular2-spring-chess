@@ -13,9 +13,12 @@ export class BoardComponent implements OnInit {
   private fontSize: number;
   private gameUUID: string;
   private sub: any;
+  private movement: Movement;
   game: any;
 
+
   constructor(private route: ActivatedRoute, private router: Router) {
+    this.movement = { x1: null, y1: null, x2: null, y2: null };
   }
 
   ngOnInit() {
@@ -46,6 +49,24 @@ export class BoardComponent implements OnInit {
 
   click(x, y) {
     console.log("clicked "+x+","+y);
+    if(this.game.board.rows[y].squares[x].piece) {
+      console.log("start movement");
+      this.movement.x1 = x;
+      this.movement.y1 = y;
+    }else if (this.movement.x1 != null) {
+      console.log("make movement now");
+      this.movement.x2 = x;
+      this.movement.y2 = y;
+      let message:Message = {
+        action: 'move',
+        movement: this.movement,
+        gameUUID: this.gameUUID
+      }
+      this.ws.send(message);
+      //reset movement
+      this.movement = { x1: null, y1: null, x2: null, y2: null };
+    }
+
   }
 
   ngAfterViewInit() {
