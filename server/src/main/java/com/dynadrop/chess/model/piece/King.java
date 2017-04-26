@@ -1,6 +1,7 @@
 package com.dynadrop.chess.model.piece;
 
 import com.dynadrop.chess.model.Piece;
+import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.websocket.bean.Movement;
 
 
@@ -13,9 +14,11 @@ public class King implements Piece {
     this.htmlCode = "&#9818;";
   }
 
-  public boolean validateMovement (Movement movement) {
-    System.out.println("TODO validateMovement for "+this.getClass());
-    return true;
+  public boolean validateMovement (Movement movement, Board board) {
+    System.out.println("validating movement for " + this.getClass());
+    return (movement.isDestinationWithinBoard() &&
+            movement.getDistance() == 1 &&
+            movement.hasNoPiecesOnTheWay(board));
   }
 
 }

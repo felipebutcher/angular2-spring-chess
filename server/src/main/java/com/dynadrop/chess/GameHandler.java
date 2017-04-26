@@ -42,7 +42,7 @@ public class GameHandler extends TextWebSocketHandler {
           Gson gson = new Gson();
           Message message = gson.fromJson(textMessage.getPayload(), Message.class);
           if ("CLOSE".equalsIgnoreCase(textMessage.getPayload())) {
-            session.close();
+            //session.close();
           }else if ("newGame".equals(message.action)) {
             Player player = new Player();
             Game game = new Game(player, message.gameUUID);
@@ -52,13 +52,10 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             Board board = game.getBoard();
-            if (board.movePiece(message.movement)) {
-              //session.sendMessage(new TextMessage(gson.toJson(game)));
-              sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
-            }else {
-              //session.sendMessage(new TextMessage("{message:'invalid movement'}"));
-              sendMessageToAllSessions(new TextMessage("{message:'invalid movement'}"));
+            if (!board.movePiece(message.movement)){
+              System.out.println("invalid move");
             }
+            sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }else if ("requestUpdate".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
             //session.sendMessage(new TextMessage(gson.toJson(game)));

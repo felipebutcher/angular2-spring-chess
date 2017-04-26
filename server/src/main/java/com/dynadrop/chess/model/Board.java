@@ -65,10 +65,10 @@ public class Board {
   }
 
   public boolean movePiece(Movement movement) {
-    Piece piece = this.getPieceAt(movement.x1, movement.y1);
-    if (piece.validateMovement(movement)) {
-      this.setPieceAt(movement.x1, movement.y1, null);
-      this.setPieceAt(movement.x2, movement.y2, piece);
+    Piece piece = this.getPieceAt(movement.getX1(), movement.getY1());
+    if (piece!=null && piece.validateMovement(movement, this)) {
+      this.setPieceAt(movement.getX1(), movement.getY1(), null);
+      this.setPieceAt(movement.getX2(), movement.getY2(), piece);
       return true;
     }else {
       return false;
