@@ -7,6 +7,7 @@
     <td [style.font-size.em]="fontSize"
       *ngFor="let square of row.squares; let x = index;"
       (click)="click(x, y)"
+      [style.background]="square.color"
       [ngClass]="square.piece && square.piece.color == 0 ? 'WP' : 'BP'"
       [innerHTML]="square.piece == null ? '&nbsp;' : square.piece.htmlCode">
     </td>

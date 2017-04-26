@@ -50,6 +50,7 @@ export class BoardComponent implements OnInit {
   click(x, y) {
     console.log("clicked "+x+","+y);
     if(this.game.board.rows[y].squares[x].piece) {
+      this.game.board.rows[y].squares[x].color = "red";
       console.log("start movement");
       this.movement.x1 = x;
       this.movement.y1 = y;
