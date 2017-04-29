@@ -4,6 +4,7 @@ import com.dynadrop.chess.model.Square;
 import com.dynadrop.chess.model.piece.*;
 import com.dynadrop.chess.model.Row;
 import com.dynadrop.chess.websocket.bean.Movement;
+import com.dynadrop.chess.websocket.bean.Position;
 
 public class Board {
   Row[] rows;
@@ -64,23 +65,12 @@ public class Board {
     return this.rows;
   }
 
-  public boolean movePiece(Movement movement) {
-    Piece piece = this.getPieceAt(movement.getX1(), movement.getY1());
-    if (piece!=null && piece.validateMovement(movement, this)) {
-      this.setPieceAt(movement.getX1(), movement.getY1(), null);
-      this.setPieceAt(movement.getX2(), movement.getY2(), piece);
-      return true;
-    }else {
-      return false;
-    }
+  public Piece getPieceAt(Position position) {
+    return this.rows[position.getY()].getSquares()[position.getX()].getPiece();
   }
 
-  public Piece getPieceAt(int x, int y) {
-    return this.rows[y].getSquares()[x].getPiece();
-  }
-
-  public void setPieceAt(int x,int y, Piece piece) {
-    this.rows[y].getSquares()[x].setPiece(piece);
+  public void setPieceAt(Position position, Piece piece) {
+    this.rows[position.getY()].getSquares()[position.getX()].setPiece(piece);
   }
 
 }

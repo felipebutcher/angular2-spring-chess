@@ -1,8 +1,9 @@
 package com.dynadrop.chess.model.piece;
 
 import com.dynadrop.chess.model.Piece;
-import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.websocket.bean.Movement;
+import com.dynadrop.chess.websocket.bean.Direction;
+import java.util.ArrayList;
 
 
 public class King implements Piece {
@@ -14,11 +15,14 @@ public class King implements Piece {
     this.htmlCode = "&#9818;";
   }
 
-  public boolean validateMovement (Movement movement, Board board) {
-    System.out.println("validating movement for " + this.getClass());
-    return (movement.isDestinationWithinBoard() &&
-            movement.getDistance() == 1 &&
-            movement.hasNoPiecesOnTheWay(board));
+  public int getColor() {
+    return this.color;
+  }
+
+  public Direction[] getDirections() {
+    ArrayList<Direction> directions = new ArrayList<Direction>();
+    //directions.add(new Direction(0,1));
+    return directions.toArray(new Direction[0]);
   }
 
 }

@@ -51,8 +51,7 @@ public class GameHandler extends TextWebSocketHandler {
             //session.sendMessage(new TextMessage(gson.toJson(game)));
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
-            Board board = game.getBoard();
-            if (!board.movePiece(message.movement)){
+            if (!game.movePiece(message.movement)){
               System.out.println("invalid move");
             }
             sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
