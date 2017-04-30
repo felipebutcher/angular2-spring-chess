@@ -3,7 +3,7 @@ package com.dynadrop.chess.model;
 import com.dynadrop.chess.model.Player;
 import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
-import com.dynadrop.chess.model.piece.King;
+import com.dynadrop.chess.model.piece.*;
 import com.dynadrop.chess.websocket.bean.Movement;
 import com.dynadrop.chess.websocket.bean.Position;
 import com.dynadrop.chess.websocket.bean.Direction;
@@ -67,20 +67,23 @@ public class Game {
     return false;
   }
 
-  public Movement[] getAllPossibleMovements(Position positionFrom) {
+  public Movement[] getAllPossibleMovements(Position position) {
     ArrayList<Movement> movements = new ArrayList<Movement>();
-    Piece piece = this.board.getPieceAt(positionFrom);
+    Piece piece = this.board.getPieceAt(position);
+    if (piece.getClass().equals(Pawn.class)) {
+      ((Pawn)piece).setBoardAndPosition(this.board, position);
+    }
     Direction directions[] = piece.getDirections();
     System.out.println("Directions for "+piece.getClass());
     for (Direction direction: directions) {
       System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
-      //TODO pawn can move to diagonal if there is enemy
-      //TODO pawn cannot move straight if there is enemy
+      Position positionFrom = position;
       Position positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
       int i=0;
       while (this.canMoveTo(piece, positionTo) && i<=direction.getLimit()) {
-        movements.add(new Movement(positionFrom, positionTo));
+        movements.add(new Movement(position, positionTo));
         positionFrom = positionTo;
+        positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
         i++;
       }
     }
@@ -88,13 +91,16 @@ public class Game {
   }
 
   private boolean canMoveTo(Piece piece, Position position) {
+    if (!position.isWithinBoard()) {
+      return false;
+    }
     Piece pieceAtDestination = getPieceAt(position);
     System.out.println("canMoveTo piece:"+piece+", pieceAtDestination:"+pieceAtDestination);
     System.out.println("piece.color:"+piece.getColor());
     if (pieceAtDestination != null) {
       System.out.println("pieceAtDestination.color:"+pieceAtDestination.getColor());
     }
-    if (position.isWithinBoard() && (pieceAtDestination == null || piece.getColor()!=pieceAtDestination.getColor())) {
+    if (pieceAtDestination == null || piece.getColor()!=pieceAtDestination.getColor()) {
       System.out.println(piece.getClass()+" can move to "+position.getX()+","+position.getY()+"");
       return true;
     } else {

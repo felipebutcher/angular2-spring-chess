@@ -40,7 +40,9 @@ public class ChessTest {
   public void testPawnMove() throws Exception {
     Game game = new Game(new Player(), "UUID");
     game.joinGame(new Player());
-    Movement movement = new Movement(new Position(0,6), new Position(0,5));//TODO destinado 0,4 it's not allowgin yet
+    Movement movement = new Movement(new Position(0,6), new Position(0,4));
+    assertEquals(true, game.movePiece(movement));
+    movement = new Movement(new Position(7,6), new Position(7,4));
     assertEquals(true, game.movePiece(movement));
     movement = new Movement(new Position(1,6), new Position(1,5));
     assertEquals(true, game.movePiece(movement));
