@@ -38,9 +38,11 @@ export class SplashComponent {
     this.ws.getDataStream().subscribe(
       res => {
         let game = JSON.parse(res.data);
-        console.log('Match created with uuid: ' + game.uuid);
-        this.router.navigate(['/game/'+game.uuid]);
-        localStorage.setItem("game", JSON.stringify(game));
+        if(game.uuid) {
+          console.log('Match created with uuid: ' + game.uuid);
+          this.router.navigate(['/game/'+game.uuid]);
+          localStorage.setItem("game", JSON.stringify(game));
+        }
       },
       function(e) { console.log('Error: ' + e.message); },
       function() { console.log('Completed'); }

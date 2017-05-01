@@ -10,6 +10,7 @@ import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
 import com.dynadrop.chess.websocket.bean.Message;
+import com.dynadrop.chess.websocket.bean.Movement;
 import java.util.ArrayList;
 import java.io.IOException;
 
@@ -56,6 +57,14 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("requestUpdate".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
             this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+          }else if ("requestPossibleMovements".equals(message.action)) {
+            Game game = this.getGameByUUID(message.gameUUID);
+            ReturnMessage returnMessage = new ReturnMessage();
+            returnMessage.type = "possibleMovements";
+            System.out.println("requestPossibleMovements");
+            System.out.println(message.movement);
+            returnMessage.possibleMovements = game.getAllPossibleMovements(message.movement.getPosition1());
+            this.sendMessageToAllSessions(new TextMessage(gson.toJson(returnMessage)));
           }
         }catch (Exception e) {
           System.out.println("EXCEPTION OCURRED");
@@ -84,4 +93,9 @@ public class GameHandler extends TextWebSocketHandler {
       return null;
     }
 
+}
+
+class ReturnMessage {
+  String type;
+  Movement possibleMovements[];
 }

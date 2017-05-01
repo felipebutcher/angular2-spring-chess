@@ -35,10 +35,20 @@ export class BoardComponent implements OnInit {
       }
       this.ws.getDataStream().subscribe(
         res => {
-          let game = JSON.parse(res.data);
-          console.log('received game update: ' + game.uuid);
-          console.log(game);
-          this.game = game;
+          console.log(JSON.parse(res.data).type);
+          if (JSON.parse(res.data).type == "possibleMovements") {
+            let availableMovements = JSON.parse(res.data).possibleMovements;
+            console.log("received possible movements");
+            for (let movement of availableMovements) {
+              console.log(movement.position2.x + "," + movement.position2.y);
+              this.game.board.rows[movement.position2.y].squares[movement.position2.x].color = "green";
+            }
+          }else {
+            let game = JSON.parse(res.data);
+            console.log('received game update: ' + game.uuid);
+            console.log(game);
+            this.game = game;
+          }
         },
         function(e) { console.log('Error: ' + e.message); },
         function() { console.log('Completed'); }
@@ -52,6 +62,12 @@ export class BoardComponent implements OnInit {
     if(this.game.board.rows[y].squares[x].piece) {
       this.game.board.rows[y].squares[x].color = "red";
       console.log("start movement");
+      let message:Message = {
+        action: 'requestPossibleMovements',
+        movement: { position1: {x: x, y: y}, position2: {x: null, y: null} },
+        gameUUID: this.gameUUID
+      }
+      this.ws.send(message);
       this.movement.position1.x = x;
       this.movement.position1.y = y;
     }else if (this.movement.position1.x != null) {
