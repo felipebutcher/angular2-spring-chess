@@ -18,7 +18,7 @@ export class BoardComponent implements OnInit {
 
 
   constructor(private route: ActivatedRoute, private router: Router) {
-    this.movement = { x1: null, y1: null, x2: null, y2: null };
+    this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
   }
 
   ngOnInit() {
@@ -27,7 +27,7 @@ export class BoardComponent implements OnInit {
       this.gameUUID = params["gameUUID"];
       console.log("gameUUID: "+this.gameUUID);
       this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
-      let movement:Movement = { x1: 0, y1: 0, x2: 0, y2: 0 }
+      let movement:Movement = { position1: {x: 0, y: 0}, position2: {x: 0, y: 0} }
       let message:Message = {
         action: 'requestUpdate',
         movement: movement,
@@ -52,12 +52,12 @@ export class BoardComponent implements OnInit {
     if(this.game.board.rows[y].squares[x].piece) {
       this.game.board.rows[y].squares[x].color = "red";
       console.log("start movement");
-      this.movement.x1 = x;
-      this.movement.y1 = y;
-    }else if (this.movement.x1 != null) {
+      this.movement.position1.x = x;
+      this.movement.position1.y = y;
+    }else if (this.movement.position1.x != null) {
       console.log("make movement now");
-      this.movement.x2 = x;
-      this.movement.y2 = y;
+      this.movement.position2.x = x;
+      this.movement.position2.y = y;
       let message:Message = {
         action: 'move',
         movement: this.movement,
@@ -65,7 +65,7 @@ export class BoardComponent implements OnInit {
       }
       this.ws.send(message);
       //reset movement
-      this.movement = { x1: null, y1: null, x2: null, y2: null };
+      this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
     }
 
   }
@@ -91,8 +91,11 @@ interface Message {
 }
 
 interface Movement {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
+  position1: Position;
+  position2: Position;
+}
+
+interface Position {
+  x: number;
+  y: number;
 }
