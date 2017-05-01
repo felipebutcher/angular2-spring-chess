@@ -7,7 +7,7 @@ import com.dynadrop.chess.websocket.bean.Movement;
 import com.dynadrop.chess.websocket.bean.Position;
 
 public class Board {
-  Row[] rows;
+  private Row[] rows;
 
   public Board() {
     this.initBoard();
@@ -71,6 +71,29 @@ public class Board {
 
   public void setPieceAt(Position position, Piece piece) {
     this.rows[position.getY()].getSquares()[position.getX()].setPiece(piece);
+  }
+
+  @Override
+  public String toString() {
+    String boardString = "";
+    for (int x=0; x<=7; x++) {
+      String line = "";
+      for (int y=0; y<=7; y++) {
+        Piece piece = this.getPieceAt(new Position(y, x));
+        if (piece == null) {
+          line += " 0";
+        }else {
+          String className = piece.getClass().getName().replace("com.dynadrop.chess.model.piece.", "");
+          String classFirstChar = className.substring(0, 1);
+          if (className.equals("Knight")) {
+            classFirstChar = classFirstChar.toLowerCase();
+          }
+          line += " " + classFirstChar;
+        }
+      }
+      boardString += "\n " + line;
+    }
+    return boardString + "\n ";
   }
 
 }
