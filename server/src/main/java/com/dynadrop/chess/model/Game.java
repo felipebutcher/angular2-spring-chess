@@ -70,6 +70,7 @@ public class Game {
         return true;
       }
     }
+    System.out.println("Movement is NOT VALID");
     return false;
   }
 

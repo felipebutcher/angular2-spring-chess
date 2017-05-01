@@ -43,23 +43,18 @@ public class GameHandler extends TextWebSocketHandler {
           Gson gson = new Gson();
           Message message = gson.fromJson(textMessage.getPayload(), Message.class);
           if ("CLOSE".equalsIgnoreCase(textMessage.getPayload())) {
-            //session.close();
+            session.close();
           }else if ("newGame".equals(message.action)) {
             Player player = new Player();
             Game game = new Game(player, message.gameUUID);
             games.add(game);
             this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
-            //session.sendMessage(new TextMessage(gson.toJson(game)));
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
-            if (!game.movePiece(message.movement)){
-              System.out.println("invalid move");
-            }
-            String json = gson.toJson(game);
-            this.sendMessageToAllSessions(new TextMessage(json));
+            game.movePiece(message.movement);
+            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }else if ("requestUpdate".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
-            //session.sendMessage(new TextMessage(gson.toJson(game)));
             this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }
         }catch (Exception e) {
