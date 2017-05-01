@@ -21,7 +21,14 @@ public class Knight implements Piece {
 
   public Direction[] getDirections() {
     ArrayList<Direction> directions = new ArrayList<Direction>();
-    //directions.add(new Direction(0,1));
+    directions.add(new Direction(-1, -2, 1));
+    directions.add(new Direction(-2, -1, 1));
+    directions.add(new Direction(-2,  1, 1));
+    directions.add(new Direction(-1,  2, 1));
+    directions.add(new Direction( 1,  2, 1));
+    directions.add(new Direction( 2,  1, 1));
+    directions.add(new Direction( 2, -1, 1));
+    directions.add(new Direction( 1, -2, 1));
     return directions.toArray(new Direction[0]);
   }
 
