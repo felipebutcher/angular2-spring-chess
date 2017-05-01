@@ -35,6 +35,10 @@ public class Game {
     return this.board;
   }
 
+  public Player getPlayer1() {
+    return this.player1;
+  }
+
   public Player getPlayer2() {
     return this.player2;
   }
@@ -61,6 +65,8 @@ public class Game {
         this.board.setPieceAt(movement.getPosition1(), null);
         this.board.setPieceAt(movement.getPosition2(), piece);
         this.updateStatus(movement.getPosition2());
+        System.out.println(this.board);
+        System.out.println("Movement is VALID");
         return true;
       }
     }
@@ -74,13 +80,13 @@ public class Game {
       ((Pawn)piece).setBoardAndPosition(this.board, position);
     }
     Direction directions[] = piece.getDirections();
-    System.out.println("Directions for "+piece.getClass());
+    //System.out.println("Directions for "+piece.getClass());
     for (Direction direction: directions) {
-      System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
+      //System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
       Position positionFrom = position;
       Position positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
       int i=0;
-      while (this.canMoveTo(piece, positionTo) && i<=direction.getLimit()) {
+      while (this.canMoveTo(piece, positionTo) && i<direction.getLimit()) {
         movements.add(new Movement(position, positionTo));
         positionFrom = positionTo;
         positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
@@ -95,16 +101,14 @@ public class Game {
       return false;
     }
     Piece pieceAtDestination = getPieceAt(position);
-    System.out.println("canMoveTo piece:"+piece+", pieceAtDestination:"+pieceAtDestination);
-    System.out.println("piece.color:"+piece.getColor());
     if (pieceAtDestination != null) {
       System.out.println("pieceAtDestination.color:"+pieceAtDestination.getColor());
     }
     if (pieceAtDestination == null || piece.getColor()!=pieceAtDestination.getColor()) {
-      System.out.println(piece.getClass()+" can move to "+position.getX()+","+position.getY()+"");
+      //System.out.println(piece.getClass()+" can move to "+position.getX()+","+position.getY()+"");
       return true;
     } else {
-      System.out.println(piece.getClass()+" can NOT move to "+position.getX()+","+position.getY()+"");
+      //System.out.println(piece.getClass()+" can NOT move to "+position.getX()+","+position.getY()+"");
       return false;
     }
   }

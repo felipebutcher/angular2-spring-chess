@@ -24,7 +24,6 @@ public class Pawn implements Piece {
   }
 
   public Direction[] getDirections() {
-    System.out.println("GETDIRECTIONS PAWN board:"+board);
     ArrayList<Direction> directions = new ArrayList<Direction>();
     if (this.position.getY() == 6) {
       directions.add(new Direction(0, -1, 2));//move straight two squares
@@ -39,6 +38,9 @@ public class Pawn implements Piece {
     if (positionTo.isWithinBoard() && this.board.getPieceAt(positionTo) != null && this.board.getPieceAt(positionTo).getColor() != this.board.getPieceAt(position).getColor()) {
       directions.add(new Direction(1, -1, 1));//move diagonal right when 'killing' enemy
     }
+    //TODO board should not be here, it was causing error on gson.toJson
+    this.board = null;
+    this.position = null;
     return directions.toArray(new Direction[0]);
   }
 

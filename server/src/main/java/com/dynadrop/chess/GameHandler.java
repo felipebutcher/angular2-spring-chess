@@ -5,6 +5,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
@@ -47,27 +48,31 @@ public class GameHandler extends TextWebSocketHandler {
             Player player = new Player();
             Game game = new Game(player, message.gameUUID);
             games.add(game);
-            sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
             //session.sendMessage(new TextMessage(gson.toJson(game)));
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             if (!game.movePiece(message.movement)){
               System.out.println("invalid move");
             }
-            sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            String json = gson.toJson(game);
+            this.sendMessageToAllSessions(new TextMessage(json));
           }else if ("requestUpdate".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
             //session.sendMessage(new TextMessage(gson.toJson(game)));
-            sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }
         }catch (Exception e) {
+          System.out.println("EXCEPTION OCURRED");
           e.printStackTrace();
         }
     }
 
     private void sendMessageToAllSessions(TextMessage message) throws IOException {
       //TODO send only for sessions with same geme uuid
+      System.out.println("Number of sessions: " + this.sessions.size());
       for (WebSocketSession session: this.sessions) {
+        System.out.println("Sending message to client ");
         session.sendMessage(message);
       }
     }
