@@ -21,7 +21,10 @@ public class King implements Piece {
 
   public Direction[] getDirections() {
     ArrayList<Direction> directions = new ArrayList<Direction>();
-    //directions.add(new Direction(0,1));
+    directions.add(new Direction(0, -1, 1));
+    directions.add(new Direction(1, 0, 1));
+    directions.add(new Direction(0, 1, 1));
+    directions.add(new Direction(-1, 0, 1));
     return directions.toArray(new Direction[0]);
   }
 
