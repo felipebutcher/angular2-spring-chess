@@ -10,6 +10,7 @@ table.chess_table tr td {
  margin:0; padding:0;
  font-size: 1em; font-family: serif; text-align: center;
  cursor: pointer;
+ height: 10%;
 }
 
 table.chess_table tr:nth-child(odd) td:nth-child(odd),
