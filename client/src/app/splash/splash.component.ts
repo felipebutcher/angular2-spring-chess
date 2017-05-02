@@ -42,6 +42,7 @@ export class SplashComponent {
           console.log('Match created with uuid: ' + game.uuid);
           this.router.navigate(['/game/'+game.uuid]);
           localStorage.setItem("game", JSON.stringify(game));
+          localStorage.setItem("myPlayerNumber", "0");
         }
       },
       function(e) { console.log('Error: ' + e.message); },

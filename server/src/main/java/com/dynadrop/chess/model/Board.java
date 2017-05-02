@@ -25,7 +25,7 @@ public class Board {
       new Bishop(Piece.BLACK),
       new Knight(Piece.BLACK),
       new Rook(Piece.BLACK)
-    });
+    }, 0);
     this.rows[1] = new Row(new Piece[]{
       new Pawn(Piece.BLACK),
       new Pawn(Piece.BLACK),
@@ -35,9 +35,9 @@ public class Board {
       new Pawn(Piece.BLACK),
       new Pawn(Piece.BLACK),
       new Pawn(Piece.BLACK)
-    });
+    }, 1);
     for (int i=2; i<6; i++) {
-      this.rows[i] = new Row();
+      this.rows[i] = new Row(i);
     }
     this.rows[6] = new Row(new Piece[]{
       new Pawn(Piece.WHITE),
@@ -48,7 +48,7 @@ public class Board {
       new Pawn(Piece.WHITE),
       new Pawn(Piece.WHITE),
       new Pawn(Piece.WHITE)
-    });
+    }, 6);
     this.rows[7] = new Row(new Piece[]{
       new Rook(Piece.WHITE),
       new Knight(Piece.WHITE),
@@ -58,7 +58,7 @@ public class Board {
       new Bishop(Piece.WHITE),
       new Knight(Piece.WHITE),
       new Rook(Piece.WHITE)
-    });
+    }, 7);
   }
 
   public Row[] getRows() {

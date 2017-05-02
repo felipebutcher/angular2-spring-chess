@@ -14,6 +14,7 @@ export class BoardComponent implements OnInit {
   private gameUUID: string;
   private sub: any;
   private movement: Movement;
+  private myPlayerNumber: number;
   game: any;
 
 
@@ -22,6 +23,10 @@ export class BoardComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!localStorage.getItem("myPlayerNumber")) {
+      localStorage.setItem("myPlayerNumber", "1");
+    }
+    this.myPlayerNumber = +localStorage.getItem("myPlayerNumber");
     this.sub = this.route.params.subscribe(params => {
       this.game = JSON.parse(localStorage.getItem("game"));
       this.gameUUID = params["gameUUID"];
@@ -60,6 +65,12 @@ export class BoardComponent implements OnInit {
   click(x, y) {
     console.log("clicked "+x+","+y);
     if(this.game.board.rows[y].squares[x].piece) {
+      if (this.game.board.rows[y].squares[x].piece.color != this.myPlayerNumber) {
+        return;
+      }
+      if (this.game.turn != this.myPlayerNumber) {
+        return;
+      }
       this.game.board.rows[y].squares[x].color = "red";
       console.log("start movement");
       let message:Message = {

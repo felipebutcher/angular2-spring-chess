@@ -16,12 +16,13 @@ public class Game {
   private String uuid;
   private int status;
   private int playerTurn;
+  private int turn;
 
   public final int STARTED = 0;
   public final int CHECK = 1;
   public final int MATE = 2;
-  public final int PLAYER1 = 0;
-  public final int PLAYER2 = 1;
+  //public final int PLAYER1 = 0;
+  //public final int PLAYER2 = 1;
 
 
   public Game(Player player1, String uuid) {
@@ -29,6 +30,7 @@ public class Game {
     this.player1 = player1;
     this.uuid = uuid;
     this.status = STARTED;
+    this.turn = Piece.WHITE;
   }
 
   public Board getBoard() {
@@ -55,18 +57,32 @@ public class Game {
     return this.status;
   }
 
+  public int getTurn() {
+    return this.turn;
+  }
+
   public boolean movePiece(Movement movement) throws Exception{
+    Piece piece = this.getPieceAt(movement.getPosition1());
+    if (piece.getColor() != this.turn) {
+      System.out.println("Movement is NOT VALID, wrong player turn");
+      return false;
+    }
     Movement possibleMovements[] = this.getAllPossibleMovements(movement.getPosition1());
     System.out.println("Requested movement: "+movement);
     for(Movement possibleMovement: possibleMovements) {
       System.out.println("Possible movement: "+possibleMovement);
       if (movement.equals(possibleMovement)) {
-        Piece piece = this.board.getPieceAt(movement.getPosition1());
+        //Piece piece = this.board.getPieceAt(movement.getPosition1());
         this.board.setPieceAt(movement.getPosition1(), null);
         this.board.setPieceAt(movement.getPosition2(), piece);
         this.updateStatus(movement.getPosition2());
         System.out.println(this.board);
         System.out.println("Movement is VALID");
+        if (this.turn == Piece.WHITE) {
+          this.turn = Piece.BLACK;
+        } else {
+          this.turn = Piece.WHITE;
+        }
         return true;
       }
     }
@@ -142,7 +158,7 @@ public class Game {
     }
   }
 
-  private Piece getPieceAt(Position position) {
+  public Piece getPieceAt(Position position) {
     return this.board.getRows()[position.getY()].getSquares()[position.getX()].getPiece();
   }
 

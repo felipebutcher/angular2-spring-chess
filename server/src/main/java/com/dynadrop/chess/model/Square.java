@@ -1,10 +1,15 @@
 package com.dynadrop.chess.model;
 
+import com.dynadrop.chess.websocket.bean.Position;
+import com.dynadrop.chess.model.Piece;
+
 public class Square {
   Piece piece;
+  Position position;
 
-  public Square(Piece piece) {
+  public Square(Piece piece, Position position) {
     this.piece = piece;
+    this.position = position;
   }
 
   public Piece getPiece() {

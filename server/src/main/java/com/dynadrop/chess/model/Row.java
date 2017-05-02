@@ -1,22 +1,24 @@
 package com.dynadrop.chess.model;
 
+import com.dynadrop.chess.websocket.bean.Position;
+
 
 public class Row {
   Square[] squares;
 
-  public Row(Piece[] pieces) {
+  public Row(Piece[] pieces, int y) {
     this.squares = new Square[8];
-    int i=0;
+    int x=0;
     for (Piece piece: pieces) {
-      this.squares[i] = new Square(piece);
-      i++;
+      this.squares[x] = new Square(piece, new Position(x,y));
+      x++;
     }
   }
 
-  public Row() {
+  public Row(int y) {
     this.squares = new Square[8];
-    for (int i=0; i<8; i++) {
-      this.squares[i] = new Square(null);
+    for (int x=0; x<8; x++) {
+      this.squares[x] = new Square(null, new Position(x,y));
     }
   }
 

@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
+import com.dynadrop.chess.model.Piece;
 import com.dynadrop.chess.websocket.bean.Message;
 import com.dynadrop.chess.websocket.bean.Movement;
 import java.util.ArrayList;
@@ -50,6 +51,11 @@ public class GameHandler extends TextWebSocketHandler {
             Game game = new Game(player, message.gameUUID);
             games.add(game);
             this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+          }else if ("joinGame".equals(message.action)) {
+            Game game = this.getGameByUUID(message.gameUUID);
+            Player player = new Player();
+            game.joinGame(player);
+            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             game.movePiece(message.movement);
@@ -59,12 +65,13 @@ public class GameHandler extends TextWebSocketHandler {
             this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }else if ("requestPossibleMovements".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
-            ReturnMessage returnMessage = new ReturnMessage();
-            returnMessage.type = "possibleMovements";
-            System.out.println("requestPossibleMovements");
-            System.out.println(message.movement);
-            returnMessage.possibleMovements = game.getAllPossibleMovements(message.movement.getPosition1());
-            this.sendMessageToAllSessions(new TextMessage(gson.toJson(returnMessage)));
+            Piece piece = game.getPieceAt(message.movement.getPosition1());
+            if (piece.getColor() == game.getTurn()) {
+              ReturnMessage returnMessage = new ReturnMessage();
+              returnMessage.type = "possibleMovements";
+              returnMessage.possibleMovements = game.getAllPossibleMovements(message.movement.getPosition1());
+              this.sendMessageToAllSessions(new TextMessage(gson.toJson(returnMessage)));
+            }
           }
         }catch (Exception e) {
           System.out.println("EXCEPTION OCURRED");
@@ -73,7 +80,7 @@ public class GameHandler extends TextWebSocketHandler {
     }
 
     private void sendMessageToAllSessions(TextMessage message) throws IOException {
-      //TODO send only for sessions with same geme uuid
+      //TODO send only for sessions with same game uuid
       System.out.println("Number of sessions: " + this.sessions.size());
       for (WebSocketSession session: this.sessions) {
         System.out.println("Sending message to client ");
