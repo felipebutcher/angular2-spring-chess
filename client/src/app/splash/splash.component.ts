@@ -8,10 +8,14 @@ import { UUID } from 'angular2-uuid';
   templateUrl: './splash.component.html',
   styleUrls: ['./splash.component.css']
 })
-export class SplashComponent {
+export class SplashComponent implements OnInit {
   ws: $WebSocket;
 
   constructor(private router:Router) { }
+
+  ngOnInit() {
+    localStorage.clear();
+  }
 
   play() {
     console.log("Connecting to websocket...");
@@ -26,6 +30,7 @@ export class SplashComponent {
     let uuid = UUID.UUID();
     console.log("stored gameuuid: " + uuid);
     localStorage.setItem('gameUUID', uuid);
+    localStorage.setItem("myPlayerNumber", "0");
     let message:Message = {
       action: 'newGame',
       movement: movement,
@@ -42,7 +47,6 @@ export class SplashComponent {
           console.log('Match created with uuid: ' + game.uuid);
           this.router.navigate(['/game/'+game.uuid]);
           localStorage.setItem("game", JSON.stringify(game));
-          localStorage.setItem("myPlayerNumber", "0");
         }
       },
       function(e) { console.log('Error: ' + e.message); },

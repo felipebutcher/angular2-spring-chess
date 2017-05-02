@@ -6,7 +6,7 @@
   <tr *ngFor="let row of game.board.rows; let y = index;">
     <td [style.font-size.em]="fontSize"
       *ngFor="let square of row.squares; let x = index;"
-      (click)="click(square.position.x, square.position.y)"
+      (click)="click(x,y)"
       [style.background]="square.color"
       [ngClass]="square.piece && square.piece.color == 0 ? 'WP' : 'BP'"
       [innerHTML]="square.piece == null ? '&nbsp;' : square.piece.htmlCode">

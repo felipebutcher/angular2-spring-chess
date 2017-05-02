@@ -15,7 +15,7 @@ public class Game {
   private Player player2;
   private String uuid;
   private int status;
-  private int playerTurn;
+  //private int playerTurn;
   private int turn;
 
   public final int STARTED = 0;
@@ -63,6 +63,8 @@ public class Game {
 
   public boolean movePiece(Movement movement) throws Exception{
     Piece piece = this.getPieceAt(movement.getPosition1());
+    System.out.println("TURN:" + this.turn);
+    System.out.println("piece COLOR:" + piece.getColor());
     if (piece.getColor() != this.turn) {
       System.out.println("Movement is NOT VALID, wrong player turn");
       return false;
@@ -165,7 +167,7 @@ public class Game {
   private boolean isKingOnMate(Position kingPosition) throws Exception {
     Movement possibleKingMovements[] = this.getAllPossibleMovements(kingPosition);
     Piece piece = this.getPieceAt(kingPosition);
-    if (piece.getClass() != King.class) {
+    if (piece.getClass().equals(King.class)) {
       throw new Exception("Piece is not King");
     }
     boolean mate = true;
@@ -181,7 +183,7 @@ public class Game {
         Movement possibleMovements[] = this.getAllPossibleMovements(position);
         for (Movement possibleMovement: possibleMovements) {
           Piece targetPiece = this.getPieceAt(possibleMovement.getPosition2());
-          if (targetPiece.getClass() == King.class) {
+          if (targetPiece.getClass().equals(King.class)) {
             pieceCanHitKing = true;
           }
         }

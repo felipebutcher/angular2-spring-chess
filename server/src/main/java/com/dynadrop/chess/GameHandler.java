@@ -83,8 +83,12 @@ public class GameHandler extends TextWebSocketHandler {
       //TODO send only for sessions with same game uuid
       System.out.println("Number of sessions: " + this.sessions.size());
       for (WebSocketSession session: this.sessions) {
-        System.out.println("Sending message to client ");
-        session.sendMessage(message);
+        try {
+          session.sendMessage(message);
+          System.out.println("Sending message to client ");
+        } catch (Exception e) {
+
+        }
       }
     }
 
