@@ -23,10 +23,10 @@ public class Rook implements Piece {
 
   public Direction[] getDirections(Board board, Position position) {
     ArrayList<Direction> directions = new ArrayList<Direction>();
-    directions.add(new Direction(0, -1, 7));
-    directions.add(new Direction(1, 0, 7));
-    directions.add(new Direction(0, 1, 7));
-    directions.add(new Direction(-1, 0, 7));
+    directions.add(new Direction( 0, -1, 7));
+    directions.add(new Direction( 1,  0, 7));
+    directions.add(new Direction( 0,  1, 7));
+    directions.add(new Direction(-1,  0, 7));
     return directions.toArray(new Direction[0]);
   }
 
