@@ -25,18 +25,25 @@ public class Pawn implements Piece {
 
   public Direction[] getDirections() {
     ArrayList<Direction> directions = new ArrayList<Direction>();
-    if (this.position.getY() == 6) {
-      directions.add(new Direction(0, -1, 2));//move straight two squares
-    }else if (this.board.getPieceAt(new Position(this.position.getX(), this.position.getY()-1)) == null) {
-      directions.add(new Direction(0, -1, 1));//move straight
+    int delta = 1;
+    System.out.println("PIECE COLOR: "+this.color);
+    if (this.color == Piece.BLACK) {
+      delta = -1;
     }
-    Position positionTo = new Position(this.position.getX()-1, this.position.getY()-1);
-    if (positionTo.isWithinBoard() && this.board.getPieceAt(positionTo) != null && this.board.getPieceAt(positionTo).getColor() != this.board.getPieceAt(position).getColor()) {
-      directions.add(new Direction(-1, -1, 1));//move diagonal left when 'killing' enemy
+    if (this.position.getY() == 6 || this.position.getY() == 1) {
+      directions.add(new Direction(0, -1*delta, 2));//move straight two squares
+    }else if (this.board.getPieceAt(new Position(this.position.getX(), (this.position.getY()-1)*delta)) == null) {
+      directions.add(new Direction(0, -1*delta, 1));//move straight
     }
-    positionTo = new Position(this.position.getX()+1, this.position.getY()-1);
-    if (positionTo.isWithinBoard() && this.board.getPieceAt(positionTo) != null && this.board.getPieceAt(positionTo).getColor() != this.board.getPieceAt(position).getColor()) {
-      directions.add(new Direction(1, -1, 1));//move diagonal right when 'killing' enemy
+    Position positionTo = new Position(this.position.getX()-1, (this.position.getY()-(1*delta)));
+    if (positionTo.isWithinBoard() && this.board.getPieceAt(positionTo) != null
+        && this.board.getPieceAt(positionTo).getColor() != this.color) {
+      directions.add(new Direction(-1, -1*delta, 1));//move diagonal left when 'killing' enemy
+    }
+    positionTo = new Position(this.position.getX()+1, (this.position.getY()-(1*delta)));
+    if (positionTo.isWithinBoard() && this.board.getPieceAt(positionTo) != null
+        && this.board.getPieceAt(positionTo).getColor() != this.color) {
+      directions.add(new Direction(1, -1*delta, 1));//move diagonal right when 'killing' enemy
     }
     //TODO board should not be here, it was causing error on gson.toJson
     this.board = null;

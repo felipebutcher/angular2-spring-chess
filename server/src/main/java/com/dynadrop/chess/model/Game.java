@@ -95,21 +95,23 @@ public class Game {
   public Movement[] getAllPossibleMovements(Position position) {
     ArrayList<Movement> movements = new ArrayList<Movement>();
     Piece piece = this.board.getPieceAt(position);
-    if (piece.getClass().equals(Pawn.class)) {
-      ((Pawn)piece).setBoardAndPosition(this.board, position);
-    }
-    Direction directions[] = piece.getDirections();
-    //System.out.println("Directions for "+piece.getClass());
-    for (Direction direction: directions) {
-      //System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
-      Position positionFrom = position;
-      Position positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
-      int i=0;
-      while (this.canMoveTo(piece, positionTo) && i<direction.getLimit()) {
-        movements.add(new Movement(position, positionTo));
-        positionFrom = positionTo;
-        positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
-        i++;
+    if (piece != null) {
+      if (piece.getClass().equals(Pawn.class)) {
+        ((Pawn)piece).setBoardAndPosition(this.board, position);
+      }
+      Direction directions[] = piece.getDirections();
+      //System.out.println("Directions for "+piece.getClass());
+      for (Direction direction: directions) {
+        //System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
+        Position positionFrom = position;
+        Position positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
+        int i=0;
+        while (this.canMoveTo(piece, positionTo) && i<direction.getLimit()) {
+          movements.add(new Movement(position, positionTo));
+          positionFrom = positionTo;
+          positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
+          i++;
+        }
       }
     }
     return movements.toArray(new Movement[0]);
@@ -161,7 +163,7 @@ public class Game {
   }
 
   public Piece getPieceAt(Position position) {
-    return this.board.getRows()[position.getY()].getSquares()[position.getX()].getPiece();
+    return this.board.getPieceAt(position);
   }
 
   private boolean isKingOnMate(Position kingPosition) throws Exception {

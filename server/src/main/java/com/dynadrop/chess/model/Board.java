@@ -66,6 +66,9 @@ public class Board {
   }
 
   public Piece getPieceAt(Position position) {
+    if (!position.isWithinBoard()) {
+      return null;
+    }
     return this.rows[position.getY()].getSquares()[position.getX()].getPiece();
   }
 
