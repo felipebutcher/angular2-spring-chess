@@ -97,8 +97,13 @@ public class Game {
         //System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
         Position positionFrom = position;
         Position positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
-        int i=0;
-        while (this.canMoveTo(piece, positionTo) && i<direction.getLimit()) {
+        int i = 0;
+        int limit = direction.getLimit();
+        while (this.canMoveTo(piece, positionTo) && i<limit) {
+          Piece pieceAtDestination = this.board.getPieceAt(positionTo);
+          if (pieceAtDestination != null && piece.getColor()!=pieceAtDestination.getColor()) {
+            limit = i;
+          }
           movements.add(new Movement(position, positionTo));
           positionFrom = positionTo;
           positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
