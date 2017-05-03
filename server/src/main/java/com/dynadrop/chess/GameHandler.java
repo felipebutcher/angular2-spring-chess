@@ -65,7 +65,7 @@ public class GameHandler extends TextWebSocketHandler {
             this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }else if ("requestPossibleMovements".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
-            Piece piece = game.getPieceAt(message.movement.getPosition1());
+            Piece piece = game.getBoard().getPieceAt(message.movement.getPosition1());
             if (piece.getColor() == game.getTurn()) {
               ReturnMessage returnMessage = new ReturnMessage();
               returnMessage.type = "possibleMovements";

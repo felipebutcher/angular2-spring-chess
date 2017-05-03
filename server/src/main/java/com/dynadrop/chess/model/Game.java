@@ -15,14 +15,11 @@ public class Game {
   private Player player2;
   private String uuid;
   private int status;
-  //private int playerTurn;
   private int turn;
 
   public final int STARTED = 0;
   public final int CHECK = 1;
   public final int MATE = 2;
-  //public final int PLAYER1 = 0;
-  //public final int PLAYER2 = 1;
 
 
   public Game(Player player1, String uuid) {
@@ -62,9 +59,7 @@ public class Game {
   }
 
   public boolean movePiece(Movement movement) throws Exception{
-    Piece piece = this.getPieceAt(movement.getPosition1());
-    System.out.println("TURN:" + this.turn);
-    System.out.println("piece COLOR:" + piece.getColor());
+    Piece piece = this.board.getPieceAt(movement.getPosition1());
     if (piece.getColor() != this.turn) {
       System.out.println("Movement is NOT VALID, wrong player turn");
       return false;
@@ -96,10 +91,7 @@ public class Game {
     ArrayList<Movement> movements = new ArrayList<Movement>();
     Piece piece = this.board.getPieceAt(position);
     if (piece != null) {
-      if (piece.getClass().equals(Pawn.class)) {
-        ((Pawn)piece).setBoardAndPosition(this.board, position);
-      }
-      Direction directions[] = piece.getDirections();
+      Direction directions[] = piece.getDirections(this.board, position);
       //System.out.println("Directions for "+piece.getClass());
       for (Direction direction: directions) {
         //System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
@@ -121,15 +113,10 @@ public class Game {
     if (!position.isWithinBoard()) {
       return false;
     }
-    Piece pieceAtDestination = getPieceAt(position);
-    if (pieceAtDestination != null) {
-      System.out.println("pieceAtDestination.color:"+pieceAtDestination.getColor());
-    }
+    Piece pieceAtDestination = this.board.getPieceAt(position);
     if (pieceAtDestination == null || piece.getColor()!=pieceAtDestination.getColor()) {
-      //System.out.println(piece.getClass()+" can move to "+position.getX()+","+position.getY()+"");
       return true;
     } else {
-      //System.out.println(piece.getClass()+" can NOT move to "+position.getX()+","+position.getY()+"");
       return false;
     }
   }
@@ -151,7 +138,7 @@ public class Game {
     //get all possible movements for new piece position
     Movement newPossibleMovements[] = this.getAllPossibleMovements(position);
     for (Movement movement: newPossibleMovements) {
-      Piece piece = this.getPieceAt(movement.getPosition2());
+      Piece piece = this.board.getPieceAt(movement.getPosition2());
       if (piece != null && piece.getClass() == King.class) {
         //if piece can hit king it's a check
         this.status = CHECK;
@@ -162,13 +149,9 @@ public class Game {
     }
   }
 
-  public Piece getPieceAt(Position position) {
-    return this.board.getPieceAt(position);
-  }
-
   private boolean isKingOnMate(Position kingPosition) throws Exception {
     Movement possibleKingMovements[] = this.getAllPossibleMovements(kingPosition);
-    Piece piece = this.getPieceAt(kingPosition);
+    Piece piece = this.board.getPieceAt(kingPosition);
     if (piece.getClass().equals(King.class)) {
       throw new Exception("Piece is not King");
     }
@@ -184,7 +167,7 @@ public class Game {
         boolean pieceCanHitKing = false;
         Movement possibleMovements[] = this.getAllPossibleMovements(position);
         for (Movement possibleMovement: possibleMovements) {
-          Piece targetPiece = this.getPieceAt(possibleMovement.getPosition2());
+          Piece targetPiece = this.board.getPieceAt(possibleMovement.getPosition2());
           if (targetPiece.getClass().equals(King.class)) {
             pieceCanHitKing = true;
           }
