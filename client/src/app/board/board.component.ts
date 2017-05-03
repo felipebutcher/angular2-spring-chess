@@ -78,10 +78,8 @@ export class BoardComponent implements OnInit {
     console.log("this.myPlayerNumber="+this.myPlayerNumber);
     console.log(this.myPlayerNumber == 1);
     console.log("clicked "+x+","+y);
-    if(this.game.board.rows[y].squares[x].piece) {
-      if (this.game.board.rows[y].squares[x].piece.color != this.myPlayerNumber) {
-        return;
-      }
+    if(this.game.board.rows[y].squares[x].piece &&
+       this.game.board.rows[y].squares[x].piece.color == this.myPlayerNumber) {
       if (this.game.turn != this.myPlayerNumber) {
         return;
       }
