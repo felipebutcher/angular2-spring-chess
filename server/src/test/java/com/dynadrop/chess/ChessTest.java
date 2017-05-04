@@ -60,7 +60,7 @@ public class ChessTest {
     this.testMovePiece(new Movement(new Position(4,1), new Position(4,2)), true, Pawn.class);
     this.testMovePiece(new Movement(new Position(5,6), new Position(5,4)), true, Pawn.class);
     this.testMovePiece(new Movement(new Position(3,0), new Position(7,4)), true, Queen.class);
-    assertEquals(Game.MATE, this.game.getStatus());
+    assertEquals(Game.CHECKMATE, this.game.getStatus());
   }
 
   private void testMovePiece(Movement movement, boolean expected, Class classObj) throws Exception {

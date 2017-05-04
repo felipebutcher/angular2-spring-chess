@@ -15,11 +15,11 @@ public class Game {
   private Player player2;
   private String uuid;
   private int status;
-  private int turn;
+  private int turnColor;
 
   public static final int STARTED = 0;
   public static final int CHECK = 1;
-  public static final int MATE = 2;
+  public static final int CHECKMATE = 2;
 
 
   public Game(Player player1, String uuid) {
@@ -27,7 +27,7 @@ public class Game {
     this.player1 = player1;
     this.uuid = uuid;
     this.status = STARTED;
-    this.turn = Piece.WHITE;
+    this.turnColor = Piece.WHITE;
   }
 
   public Board getBoard() {
@@ -54,13 +54,13 @@ public class Game {
     return this.status;
   }
 
-  public int getTurn() {
-    return this.turn;
+  public int getTurnColor() {
+    return this.turnColor;
   }
 
   public boolean movePiece(Movement movement) throws Exception{
     Piece piece = this.board.getPieceAt(movement.getPosition1());
-    if (piece.getColor() != this.turn) {
+    if (piece.getColor() != this.turnColor) {
       System.out.println("Movement is NOT VALID, wrong player turn");
       return false;
     }
@@ -68,16 +68,24 @@ public class Game {
     System.out.println("Requested movement: "+movement);
     for(Movement possibleMovement: possibleMovements) {
       System.out.println("Possible movement: "+possibleMovement);
-      if (movement.equals(possibleMovement)) {
+      int enemyColor = this.getEnemyColor(piece.getColor());
+      if (movement.equals(possibleMovement) &&
+          !this.isOnCheck(piece.getColor()) &&
+          this.status != CHECKMATE) {
         System.out.println(this.board);
         System.out.println("Movement is VALID");
         this.board.setPieceAt(movement.getPosition1(), null);
         this.board.setPieceAt(movement.getPosition2(), piece);
-        this.updateStatus(movement.getPosition2());
-        if (this.turn == Piece.WHITE) {
-          this.turn = Piece.BLACK;
+        if (this.turnColor == Piece.WHITE) {
+          this.turnColor = Piece.BLACK;
         } else {
-          this.turn = Piece.WHITE;
+          this.turnColor = Piece.WHITE;
+        }
+        if (this.isOnCheck(this.turnColor)) {
+          this.status = CHECK;
+          if (this.isOnCheckMate(this.turnColor)) {
+            this.status = CHECKMATE;
+          }
         }
         return true;
       }
@@ -125,12 +133,12 @@ public class Game {
     }
   }
 
-  public Position[] getAllPiecesPositions(int color) {
+  public Position[] getAllPiecesPositions(Integer color) {
     ArrayList<Position> positions = new ArrayList<Position>();
     for (int x=0; x<=7; x++) {
       for (int y=0; y<=7; y++) {
         Piece piece = this.board.getPieceAt(new Position(x, y));
-        if (piece != null && piece.getColor() == color) {
+        if (piece != null && (piece.getColor() == color || color == null)) {
           positions.add(new Position(x, y));
         }
       }
@@ -138,47 +146,21 @@ public class Game {
     return positions.toArray(new Position[0]);
   }
 
-  private void updateStatus(Position position) throws Exception{
-    //get all possible movements for new piece position
-    Movement newPossibleMovements[] = this.getAllPossibleMovements(position);
-    System.out.println("Updating status...");
-    for (Movement movement: newPossibleMovements) {
-      Piece piece = this.board.getPieceAt(movement.getPosition2());
-      System.out.println("Possible movement:" + movement);
-      if (piece != null && piece.getClass().equals(King.class)) {
-        //if piece can hit king it's a check
-        this.status = CHECK;
-        System.out.println("CHECK DETECTED");
-        if (this.isKingOnMate(movement.getPosition2())) {
-          this.status = MATE;
-          System.out.println("MATE DETECTED");
-        }
-      }
-    }
-    System.out.println("Game status: "+this.status);
+  private boolean isOnCheck(int color) {
+    return false;
   }
 
-  private boolean isKingOnMate(Position kingPosition) throws Exception {
-    Movement possibleKingMovements[] = this.getAllPossibleMovements(kingPosition);
-    Piece piece = this.board.getPieceAt(kingPosition);
-    boolean mate = false;
-    for (Movement movement: possibleKingMovements) {
-      Position enemyPositions[];
-      if (piece.getColor() == Piece.WHITE) {
-        enemyPositions = this.getAllPiecesPositions(Piece.BLACK);
-      }else {
-        enemyPositions = this.getAllPiecesPositions(Piece.WHITE);
-      }
-      for (Position enemyPosition: enemyPositions) {
-        if (this.pieceCanHitKing(enemyPosition)) {
-          mate = true;
-        }
-      }
-    }
-    return mate;
+  private boolean isOnCheckMate(int color) {
+    return false;
   }
 
-  private boolean pieceCanHitKing (Position position) {
+  private int getEnemyColor(int color) {
+    if (color == Piece.WHITE) return Piece.BLACK;
+    else return Piece.WHITE;
+  }
+
+  private boolean pieceCanHitEnemyKing (Position position) {
+    Piece piece = this.board.getPieceAt(position);
     boolean pieceCanHitKing = false;
     Movement possibleMovements[] = this.getAllPossibleMovements(position);
     for (Movement possibleMovement: possibleMovements) {

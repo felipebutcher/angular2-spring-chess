@@ -66,7 +66,7 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("requestPossibleMovements".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
             Piece piece = game.getBoard().getPieceAt(message.movement.getPosition1());
-            if (piece.getColor() == game.getTurn()) {
+            if (piece.getColor() == game.getTurnColor()) {
               ReturnMessage returnMessage = new ReturnMessage();
               returnMessage.type = "possibleMovements";
               returnMessage.possibleMovements = game.getAllPossibleMovements(message.movement.getPosition1());
