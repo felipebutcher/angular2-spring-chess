@@ -53,7 +53,10 @@ public class Game {
     return uuid;
   }
 
-  public int getStatus() {
+  public int getStatus() throws Exception {
+    if (this.isOnCheckMate(Piece.WHITE) || this.isOnCheckMate(Piece.BLACK)) {
+      this.status = CHECKMATE;
+    }
     return this.status;
   }
 
@@ -75,7 +78,6 @@ public class Game {
       if (movement.equals(possibleMovement) &&
           !this.isOnCheck(piece.getColor()) &&
           this.status != CHECKMATE) {
-        this.saveInfoForUndo(movement);
         this.board.setPieceAt(movement.getPosition1(), null);
         this.board.setPieceAt(movement.getPosition2(), piece);
         System.out.println(this.board);
@@ -85,13 +87,7 @@ public class Game {
         } else {
           this.turnColor = Piece.WHITE;
         }
-        this.isOnCheck(this.turnColor);
-        /*if (this.isOnCheck(this.turnColor)) {
-          this.status = CHECK;
-          if (this.isOnCheckMate(this.turnColor)) {
-            this.status = CHECKMATE;
-          }
-        }*/
+        this.isOnCheck(this.getEnemyColor(piece.getColor()));
         return true;
       }
     }
@@ -100,8 +96,8 @@ public class Game {
   }
 
   public void undoMove() {
-    this.board.setPieceAt(lastMovement.getPosition1(), this.lastPieceAtPosition1);
-    this.board.setPieceAt(lastMovement.getPosition2(), this.lastPieceAtPosition2);
+    this.board.setPieceAt(this.lastMovement.getPosition1(), this.lastPieceAtPosition1);
+    this.board.setPieceAt(this.lastMovement.getPosition2(), this.lastPieceAtPosition2);
   }
 
   private void saveInfoForUndo(Movement movement) {
@@ -173,12 +169,18 @@ public class Game {
     for (Position position: allPositions) {
       Movement movements[] = this.getAllPossibleMovements(position);
       for (Movement movement: movements) {
+        System.out.println("MOVING FOR CHECK");
+        System.out.println(this.board);
+        this.saveInfoForUndo(movement);
         this.movePiece(movement);
+        System.out.println(this.board);
         if (!this.isOnCheck(color)) {
           System.out.println("NOT ON CHECKMATE");
           return false;
         }
         this.undoMove();
+        System.out.println("AFTER UNDO");
+        System.out.println(this.board);
       }
     }
     this.status = CHECKMATE;
@@ -192,7 +194,7 @@ public class Game {
     int enemyColor = this.getEnemyColor(color);
     Position allEnemyPositions[] = this.getAllPiecesPositions(enemyColor);
     for (Position enemyPosition: allEnemyPositions) {
-      if (pieceCanHitEnemyKing(enemyPosition)){
+      if (this.pieceCanHitEnemyKing(enemyPosition)){
         this.status = CHECK;
         System.out.println("CHECK DETECTED");
         return true;
