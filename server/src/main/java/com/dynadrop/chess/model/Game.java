@@ -17,9 +17,9 @@ public class Game {
   private int status;
   private int turn;
 
-  public final int STARTED = 0;
-  public final int CHECK = 1;
-  public final int MATE = 2;
+  public static final int STARTED = 0;
+  public static final int CHECK = 1;
+  public static final int MATE = 2;
 
 
   public Game(Player player1, String uuid) {
@@ -69,12 +69,11 @@ public class Game {
     for(Movement possibleMovement: possibleMovements) {
       System.out.println("Possible movement: "+possibleMovement);
       if (movement.equals(possibleMovement)) {
-        //Piece piece = this.board.getPieceAt(movement.getPosition1());
+        System.out.println(this.board);
+        System.out.println("Movement is VALID");
         this.board.setPieceAt(movement.getPosition1(), null);
         this.board.setPieceAt(movement.getPosition2(), piece);
         this.updateStatus(movement.getPosition2());
-        System.out.println(this.board);
-        System.out.println("Movement is VALID");
         if (this.turn == Piece.WHITE) {
           this.turn = Piece.BLACK;
         } else {
@@ -128,8 +127,8 @@ public class Game {
 
   public Position[] getAllPiecesPositions(int color) {
     ArrayList<Position> positions = new ArrayList<Position>();
-    for (int x=0; x<7; x++) {
-      for (int y=0; y<7; y++) {
+    for (int x=0; x<=7; x++) {
+      for (int y=0; y<=7; y++) {
         Piece piece = this.board.getPieceAt(new Position(x, y));
         if (piece != null && piece.getColor() == color) {
           positions.add(new Position(x, y));
@@ -142,47 +141,53 @@ public class Game {
   private void updateStatus(Position position) throws Exception{
     //get all possible movements for new piece position
     Movement newPossibleMovements[] = this.getAllPossibleMovements(position);
+    System.out.println("Updating status...");
     for (Movement movement: newPossibleMovements) {
       Piece piece = this.board.getPieceAt(movement.getPosition2());
-      if (piece != null && piece.getClass() == King.class) {
+      System.out.println("Possible movement:" + movement);
+      if (piece != null && piece.getClass().equals(King.class)) {
         //if piece can hit king it's a check
         this.status = CHECK;
+        System.out.println("CHECK DETECTED");
         if (this.isKingOnMate(movement.getPosition2())) {
           this.status = MATE;
+          System.out.println("MATE DETECTED");
         }
       }
     }
+    System.out.println("Game status: "+this.status);
   }
 
   private boolean isKingOnMate(Position kingPosition) throws Exception {
     Movement possibleKingMovements[] = this.getAllPossibleMovements(kingPosition);
     Piece piece = this.board.getPieceAt(kingPosition);
-    if (piece.getClass().equals(King.class)) {
-      throw new Exception("Piece is not King");
-    }
-    boolean mate = true;
+    boolean mate = false;
     for (Movement movement: possibleKingMovements) {
-      Position positions[];
+      Position enemyPositions[];
       if (piece.getColor() == Piece.WHITE) {
-        positions = this.getAllPiecesPositions(Piece.BLACK);
+        enemyPositions = this.getAllPiecesPositions(Piece.BLACK);
       }else {
-        positions = this.getAllPiecesPositions(Piece.WHITE);
+        enemyPositions = this.getAllPiecesPositions(Piece.WHITE);
       }
-      for (Position position: positions) {
-        boolean pieceCanHitKing = false;
-        Movement possibleMovements[] = this.getAllPossibleMovements(position);
-        for (Movement possibleMovement: possibleMovements) {
-          Piece targetPiece = this.board.getPieceAt(possibleMovement.getPosition2());
-          if (targetPiece.getClass().equals(King.class)) {
-            pieceCanHitKing = true;
-          }
-        }
-        if (!pieceCanHitKing) {
-          mate = false;
+      for (Position enemyPosition: enemyPositions) {
+        if (this.pieceCanHitKing(enemyPosition)) {
+          mate = true;
         }
       }
     }
     return mate;
+  }
+
+  private boolean pieceCanHitKing (Position position) {
+    boolean pieceCanHitKing = false;
+    Movement possibleMovements[] = this.getAllPossibleMovements(position);
+    for (Movement possibleMovement: possibleMovements) {
+      Piece targetPiece = this.board.getPieceAt(possibleMovement.getPosition2());
+      if (targetPiece != null && targetPiece.getClass().equals(King.class)) {
+        pieceCanHitKing = true;
+      }
+    }
+    return true;
   }
 
 }

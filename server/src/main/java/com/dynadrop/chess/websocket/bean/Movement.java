@@ -27,7 +27,7 @@ public class Movement {
 
   @Override
   public boolean equals(Object object) {
-    Movement movement = (Movement) object; 
+    Movement movement = (Movement) object;
     return this.position1.getX() == movement.getPosition1().getX() &&
            this.position1.getY() == movement.getPosition1().getY() &&
            this.position2.getX() == movement.getPosition2().getX() &&
@@ -36,8 +36,7 @@ public class Movement {
 
   @Override
   public String toString() {
-    return "Movement: ("+this.position1.getX()+","+this.position1.getY()+") => ("
-                        +this.position2.getX()+","+this.position2.getY()+")";
+    return "Movement: "+this.position1+" => "+this.position2;
   }
 
 }

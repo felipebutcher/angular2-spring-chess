@@ -21,4 +21,10 @@ public class Position {
     return this.x>=0 && this.x<=7 && this.y>=0 && this.y<=7;
   }
 
+  @Override
+  public String toString() {
+    return "("+this.x+","+this.y+")";
+  }
+
+
 }

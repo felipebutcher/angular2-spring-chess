@@ -55,21 +55,18 @@ public class ChessTest {
   }
 
   @Test
-  public void testCompleteMatch() throws Exception {
-    this.testMovePiece(new Movement(new Position(0,6), new Position(0,4)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(7,1), new Position(7,3)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(7,6), new Position(7,4)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(6,1), new Position(6,3)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(1,6), new Position(1,5)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(5,1), new Position(5,3)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(2,6), new Position(3,5)), false, Pawn.class);
-    //TODO complete this crazyness
+  public void testFoolsMate() throws Exception {
+    this.testMovePiece(new Movement(new Position(6,6), new Position(6,4)), true, Pawn.class);
+    this.testMovePiece(new Movement(new Position(4,1), new Position(4,2)), true, Pawn.class);
+    this.testMovePiece(new Movement(new Position(5,6), new Position(5,4)), true, Pawn.class);
+    this.testMovePiece(new Movement(new Position(3,0), new Position(7,4)), true, Queen.class);
+    assertEquals(Game.MATE, this.game.getStatus());
   }
 
   private void testMovePiece(Movement movement, boolean expected, Class classObj) throws Exception {
     assertEquals(expected, this.game.movePiece(movement));
     if (this.getPieceAt(movement.getPosition2()) != null) {
-      assertEquals(this.getPieceAt(movement.getPosition2()).getClass(), classObj);
+      assertEquals(classObj, this.getPieceAt(movement.getPosition2()).getClass());
     }
   }
 

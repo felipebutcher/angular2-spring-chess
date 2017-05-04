@@ -26,10 +26,10 @@ public class Queen implements Piece {
     directions.add(new Direction( 1,  0, 7));
     directions.add(new Direction( 0,  1, 7));
     directions.add(new Direction(-1,  0, 7));
+    directions.add(new Direction(-1,  1, 7));
     directions.add(new Direction(-1, -1, 7));
     directions.add(new Direction( 1, -1, 7));
     directions.add(new Direction( 1,  1, 7));
-    directions.add(new Direction(-1, -1, 7));
     return directions.toArray(new Direction[0]);
   }
 
