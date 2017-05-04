@@ -16,6 +16,9 @@ public class Game {
   private String uuid;
   private int status;
   private int turnColor;
+  private Movement lastMovement;
+  private Piece lastPieceAtPosition1;
+  private Piece lastPieceAtPosition2;
 
   public static final int STARTED = 0;
   public static final int CHECK = 1;
@@ -72,26 +75,39 @@ public class Game {
       if (movement.equals(possibleMovement) &&
           !this.isOnCheck(piece.getColor()) &&
           this.status != CHECKMATE) {
-        System.out.println(this.board);
-        System.out.println("Movement is VALID");
+        this.saveInfoForUndo(movement);
         this.board.setPieceAt(movement.getPosition1(), null);
         this.board.setPieceAt(movement.getPosition2(), piece);
+        System.out.println(this.board);
+        System.out.println("Movement is VALID");
         if (this.turnColor == Piece.WHITE) {
           this.turnColor = Piece.BLACK;
         } else {
           this.turnColor = Piece.WHITE;
         }
-        if (this.isOnCheck(this.turnColor)) {
+        this.isOnCheck(this.turnColor);
+        /*if (this.isOnCheck(this.turnColor)) {
           this.status = CHECK;
           if (this.isOnCheckMate(this.turnColor)) {
             this.status = CHECKMATE;
           }
-        }
+        }*/
         return true;
       }
     }
     System.out.println("Movement is NOT VALID");
     return false;
+  }
+
+  public void undoMove() {
+    this.board.setPieceAt(lastMovement.getPosition1(), this.lastPieceAtPosition1);
+    this.board.setPieceAt(lastMovement.getPosition2(), this.lastPieceAtPosition2);
+  }
+
+  private void saveInfoForUndo(Movement movement) {
+    this.lastMovement = movement;
+    this.lastPieceAtPosition1 = this.board.getPieceAt(movement.getPosition1());
+    this.lastPieceAtPosition2 = this.board.getPieceAt(movement.getPosition2());
   }
 
   public Movement[] getAllPossibleMovements(Position position) {
@@ -146,17 +162,44 @@ public class Game {
     return positions.toArray(new Position[0]);
   }
 
-  private boolean isOnCheck(int color) {
-    return false;
-  }
-
-  private boolean isOnCheckMate(int color) {
-    return false;
-  }
-
   private int getEnemyColor(int color) {
     if (color == Piece.WHITE) return Piece.BLACK;
     else return Piece.WHITE;
+  }
+
+  private boolean isOnCheckMate(int color) throws Exception {
+    System.out.println("CHECKING IS ON CHECKMATE");
+    Position allPositions[] = this.getAllPiecesPositions(color);
+    for (Position position: allPositions) {
+      Movement movements[] = this.getAllPossibleMovements(position);
+      for (Movement movement: movements) {
+        this.movePiece(movement);
+        if (!this.isOnCheck(color)) {
+          System.out.println("NOT ON CHECKMATE");
+          return false;
+        }
+        this.undoMove();
+      }
+    }
+    this.status = CHECKMATE;
+    System.out.println("CHECKMATE DETECTED");
+    return true;
+  }
+
+  protected boolean isOnCheck(int color) {
+    System.out.println("CHECKING IS ON CHECK");
+    Position kingPosition = this.board.getKingPosition(color);
+    int enemyColor = this.getEnemyColor(color);
+    Position allEnemyPositions[] = this.getAllPiecesPositions(enemyColor);
+    for (Position enemyPosition: allEnemyPositions) {
+      if (pieceCanHitEnemyKing(enemyPosition)){
+        this.status = CHECK;
+        System.out.println("CHECK DETECTED");
+        return true;
+      }
+    }
+    System.out.println("NOT ON CHECK");
+    return false;
   }
 
   private boolean pieceCanHitEnemyKing (Position position) {
@@ -165,11 +208,12 @@ public class Game {
     Movement possibleMovements[] = this.getAllPossibleMovements(position);
     for (Movement possibleMovement: possibleMovements) {
       Piece targetPiece = this.board.getPieceAt(possibleMovement.getPosition2());
-      if (targetPiece != null && targetPiece.getClass().equals(King.class)) {
+      if (targetPiece != null && targetPiece.getClass().equals(King.class) &&
+          targetPiece.getColor() != piece.getColor()) {
         pieceCanHitKing = true;
       }
     }
-    return true;
+    return pieceCanHitKing;
   }
 
 }

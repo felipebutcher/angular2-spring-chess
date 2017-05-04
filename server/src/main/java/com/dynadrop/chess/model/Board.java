@@ -72,6 +72,18 @@ public class Board {
     return this.rows[position.getY()].getSquares()[position.getX()].getPiece();
   }
 
+  public Position getKingPosition(int color) {
+    for (int x=0; x<=7; x++) {
+      for (int y=0; y<=7; y++) {
+        Piece piece = this.rows[y].getSquares()[x].getPiece();
+        if (piece != null && piece.getClass().equals(King.class) && piece.getColor() == color) {
+          return new Position(x, y);
+        }
+      }
+    }
+    return null;
+  }
+
   public void setPieceAt(Position position, Piece piece) {
     this.rows[position.getY()].getSquares()[position.getX()].setPiece(piece);
   }
