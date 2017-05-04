@@ -9,7 +9,7 @@ import { $WebSocket } from '../services/websocket.service';
 })
 export class BoardComponent implements OnInit {
   private ws: $WebSocket;
-  private boardSize: number;
+  public  boardSize: number;
   private fontSize: number;
   private gameUUID: string;
   private sub: any;

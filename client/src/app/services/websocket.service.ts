@@ -25,12 +25,14 @@ export class $WebSocket  {
   private socket: WebSocket;
   private dataStream: Subject<any>;
   private  internalConnectionState: number;
-  constructor(private url:string, private protocols?:Array<string>, private config?: WebSocketConfig  ) {
+  private config: WebSocketConfig;
+
+  constructor(private url:string, private protocols?:Array<string>) {
     var match = new RegExp('wss?:\/\/').test(url);
     if (!match) {
       throw new Error('Invalid url provided');
     }
-    this.config = config ||{ initialTimeout: 500, maxTimeout : 300000, reconnectIfNotNormalClose :false};
+    this.config = { initialTimeout: 500, maxTimeout: 300000, reconnectIfNotNormalClose: true };
     this.dataStream = new Subject();
   }
 
