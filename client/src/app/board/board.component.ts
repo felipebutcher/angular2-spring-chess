@@ -67,7 +67,7 @@ export class BoardComponent implements OnInit {
             console.log('received game update: ' + game.uuid);
             console.log(game);
             if (game.status == 1 &&
-                this.game.turnColor == this.myPlayerNumber &&
+                //this.game.turnColor != this.myPlayerNumber &&
                 game.status != this.lastStatus) {
               alert("CHECK");
             }
