@@ -49,29 +49,34 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("newGame".equals(message.action)) {
             Player player = new Player();
             Game game = new Game(player, message.gameUUID);
+            game.addWebSocketSessionId(session.getId());
             games.add(game);
-            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(game)));
           }else if ("joinGame".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
+            game.addWebSocketSessionId(session.getId());
             Player player = new Player();
             game.joinGame(player);
-            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(game)));
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
+            game.addWebSocketSessionId(session.getId());
             game.movePiece(message.movement);
             game.getStatus();//update game status
-            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(game)));
           }else if ("requestUpdate".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
-            this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
+            game.addWebSocketSessionId(session.getId());
+            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(game)));
           }else if ("requestPossibleMovements".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
+            game.addWebSocketSessionId(session.getId());
             Piece piece = game.getBoard().getPieceAt(message.movement.getPosition1());
             if (piece.getColor() == game.getTurnColor()) {
               ReturnMessage returnMessage = new ReturnMessage();
               returnMessage.type = "possibleMovements";
               returnMessage.possibleMovements = game.getAllPossibleMovements(message.movement.getPosition1());
-              this.sendMessageToAllSessions(new TextMessage(gson.toJson(returnMessage)));
+              this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
             }
           }
         }catch (Exception e) {
@@ -80,13 +85,17 @@ public class GameHandler extends TextWebSocketHandler {
         }
     }
 
-    private void sendMessageToAllSessions(TextMessage message) throws IOException {
+    private void sendMessageToAllSessions(ArrayList<String> webSocketSessionIds, TextMessage message) throws IOException {
       //TODO send only for sessions with same game uuid
       System.out.println("Number of sessions: " + this.sessions.size());
       for (WebSocketSession session: this.sessions) {
         try {
-          session.sendMessage(message);
-          System.out.println("Sending message to client ");
+          for (String id: webSocketSessionIds) {
+            if (session.getId().equals(id)) {
+              session.sendMessage(message);
+              System.out.println("Sending message to client ");
+            }
+          }
         } catch (Exception e) {
 
         }

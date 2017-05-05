@@ -19,6 +19,7 @@ public class Game implements Cloneable {
   private Movement lastMovement;
   private Piece lastPieceAtPosition1;
   private Piece lastPieceAtPosition2;
+  private ArrayList<String> webSocketSessionIds;
 
   public static final int STARTED = 0;
   public static final int CHECK = 1;
@@ -31,6 +32,7 @@ public class Game implements Cloneable {
     this.uuid = uuid;
     this.status = STARTED;
     this.turnColor = Piece.WHITE;
+    this.webSocketSessionIds = new ArrayList<String>();
   }
 
   public Board getBoard() {
@@ -62,6 +64,22 @@ public class Game implements Cloneable {
 
   public int getTurnColor() {
     return this.turnColor;
+  }
+
+  public ArrayList<String> getWebSocketSessionIds() {
+    return this.webSocketSessionIds;
+  }
+
+  public void addWebSocketSessionId(String webSocketSessionId) {
+    boolean exists = false;
+    for (String id: this.webSocketSessionIds) {
+      if (id.equals(webSocketSessionId)) {
+        exists = true;
+      }
+    }
+    if (!exists) {
+      this.webSocketSessionIds.add(webSocketSessionId);
+    }
   }
 
   public boolean movePiece(Movement movement) throws Exception{
