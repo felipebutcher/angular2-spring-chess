@@ -6,11 +6,11 @@ import { SplashComponent } from './splash/splash.component';
 
 const appRoutes : Routes = [
   {
-    path: '',
+    path: 'chess/',
     component: SplashComponent
   },
   {
-    path: 'game/:gameUUID',
+    path: 'chess/game/:gameUUID',
     component: BoardComponent
   }/*,
   {
