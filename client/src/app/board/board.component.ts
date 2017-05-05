@@ -37,8 +37,8 @@ export class BoardComponent implements OnInit {
       this.game.board.rows = [];
       this.gameUUID = params["gameUUID"];
       console.log("gameUUID: "+this.gameUUID);
-      this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
-      //this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
+      //this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
+      this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
       let movement:Movement = { position1: {x: 0, y: 0}, position2: {x: 0, y: 0} }
       let message:Message = {
         action: 'requestUpdate',
