@@ -15,6 +15,7 @@ export class BoardComponent implements OnInit {
   private sub: any;
   private movement: Movement;
   private myPlayerNumber: number;
+  private lastStatus: number;
   game: any;
 
 
@@ -36,8 +37,8 @@ export class BoardComponent implements OnInit {
       this.game.board.rows = [];
       this.gameUUID = params["gameUUID"];
       console.log("gameUUID: "+this.gameUUID);
-      //this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
-      this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
+      this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
+      //this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
       let movement:Movement = { position1: {x: 0, y: 0}, position2: {x: 0, y: 0} }
       let message:Message = {
         action: 'requestUpdate',
@@ -65,6 +66,15 @@ export class BoardComponent implements OnInit {
             let game = JSON.parse(res.data);
             console.log('received game update: ' + game.uuid);
             console.log(game);
+            if (game.status == 1 &&
+                this.game.turnColor == this.myPlayerNumber &&
+                game.status != this.lastStatus) {
+              alert("CHECK");
+            }
+            if (game.status == 2 && game.status != this.lastStatus) {
+              alert("CHECKMATE");
+            }
+            this.lastStatus = game.status;
             if (this.myPlayerNumber == 1) {
               game.board = this.invertBoard(game.board);
             }
@@ -82,6 +92,9 @@ export class BoardComponent implements OnInit {
     console.log("this.myPlayerNumber="+this.myPlayerNumber);
     console.log(this.myPlayerNumber == 1);
     console.log("clicked "+x+","+y);
+    if (this.game.status == 2) {
+      return;
+    }
     if(this.game.board.rows[y].squares[x].piece &&
        this.game.board.rows[y].squares[x].piece.color == this.myPlayerNumber) {
       if (this.game.turnColor != this.myPlayerNumber) {
