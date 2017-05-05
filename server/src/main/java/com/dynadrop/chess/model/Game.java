@@ -180,19 +180,19 @@ public class Game implements Cloneable {
     for (Position position: allPositions) {
       Movement movements[] = this.getAllPossibleMovements(position);
       for (Movement movement: movements) {
-        this.saveInfoForUndo(movement);
-        this.movePiece(movement);
-        if (!this.isOnCheck(color)) {
-          return false;
-        }
-        this.undoMove();
+        Game game = (Game) this.clone();
+        game.saveInfoForUndo(movement);
+        boolean moved = game.movePiece(movement);
+        boolean isOnCheck = game.isOnCheck(color);
+        if (moved) game.undoMove();
+        if (!isOnCheck) return false;
       }
     }
     this.status = CHECKMATE;
     return true;
   }
 
-  protected boolean isOnCheck(int color) {
+  private boolean isOnCheck(int color) {
     Position kingPosition = this.board.getKingPosition(color);
     int enemyColor = this.getEnemyColor(color);
     Position allEnemyPositions[] = this.getAllPiecesPositions(enemyColor);

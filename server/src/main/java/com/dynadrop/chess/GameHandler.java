@@ -59,6 +59,7 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             game.movePiece(message.movement);
+            game.getStatus();//update game status
             this.sendMessageToAllSessions(new TextMessage(gson.toJson(game)));
           }else if ("requestUpdate".equals(message.action)) {
             Game game = this.getGameByUUID(message.gameUUID);
