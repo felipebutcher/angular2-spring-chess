@@ -19,6 +19,7 @@ export class SplashComponent implements OnInit {
 
   play() {
     console.log("Connecting to websocket...");
+    //this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
     this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
     console.log("Creating new match...");
     this.sendNewMatchRequest();

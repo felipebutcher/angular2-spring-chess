@@ -36,6 +36,7 @@ export class BoardComponent implements OnInit {
       this.game.board.rows = [];
       this.gameUUID = params["gameUUID"];
       console.log("gameUUID: "+this.gameUUID);
+      //this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
       this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
       let movement:Movement = { position1: {x: 0, y: 0}, position2: {x: 0, y: 0} }
       let message:Message = {
@@ -49,6 +50,9 @@ export class BoardComponent implements OnInit {
           if (JSON.parse(res.data).type == "possibleMovements") {
             let availableMovements = JSON.parse(res.data).possibleMovements;
             console.log("received possible movements");
+            if (this.game.turnColor != this.myPlayerNumber) {
+              return;
+            }
             for (let movement of availableMovements) {
               if (this.myPlayerNumber == 1) {
                 movement.position2.x = 7-movement.position2.x;
@@ -81,14 +85,12 @@ export class BoardComponent implements OnInit {
     if(this.game.board.rows[y].squares[x].piece &&
        this.game.board.rows[y].squares[x].piece.color == this.myPlayerNumber) {
       if (this.game.turnColor != this.myPlayerNumber) {
-        console.log("entrou aqui");
         return;
       }
       this.game.board.rows[y].squares[x].color = "red";
       console.log("start movement");
       let movement = { position1: {x: x, y: y}, position2: {x: null, y: null} };
       if (this.myPlayerNumber == 1) {
-        console.log("entrou nessa porra");
         movement = { position1: {x: 7-x, y: 7-y}, position2: {x: null, y: null} }
       }
       console.log("MOVEMENT: ");
