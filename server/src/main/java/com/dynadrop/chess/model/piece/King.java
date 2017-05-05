@@ -29,8 +29,8 @@ public class King implements Piece {
     directions.add(new Direction(-1,  0, 1));
     directions.add(new Direction(-1, -1, 1));
     directions.add(new Direction( 1, -1, 1));
+    directions.add(new Direction(-1,  1, 1));
     directions.add(new Direction( 1,  1, 1));
-    directions.add(new Direction(-1, -1, 1));
     return directions.toArray(new Direction[0]);
   }
 
