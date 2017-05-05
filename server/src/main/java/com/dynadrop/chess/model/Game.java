@@ -9,7 +9,7 @@ import com.dynadrop.chess.websocket.bean.Position;
 import com.dynadrop.chess.websocket.bean.Direction;
 import java.util.ArrayList;
 
-public class Game {
+public class Game implements Cloneable {
   private Board board;
   private Player player1;
   private Player player2;
@@ -65,18 +65,18 @@ public class Game {
   }
 
   public boolean movePiece(Movement movement) throws Exception{
+    System.out.println("Requested movement: "+movement);
     Piece piece = this.board.getPieceAt(movement.getPosition1());
     if (piece.getColor() != this.turnColor) {
       System.out.println("Movement is NOT VALID, wrong player turn");
       return false;
     }
     Movement possibleMovements[] = this.getAllPossibleMovements(movement.getPosition1());
-    System.out.println("Requested movement: "+movement);
     for(Movement possibleMovement: possibleMovements) {
       System.out.println("Possible movement: "+possibleMovement);
       int enemyColor = this.getEnemyColor(piece.getColor());
       if (movement.equals(possibleMovement) &&
-          !this.isOnCheck(piece.getColor()) &&
+          !this.isOnCheckAfterMovement(piece.getColor(), movement) &&
           this.status != CHECKMATE) {
         this.board.setPieceAt(movement.getPosition1(), null);
         this.board.setPieceAt(movement.getPosition2(), piece);
@@ -163,44 +163,45 @@ public class Game {
     else return Piece.WHITE;
   }
 
+  private boolean isOnCheckAfterMovement(int color, Movement movement) throws Exception {
+    Game game = (Game)this.clone();
+    Piece pieceAtPosition1 = game.getBoard().getPieceAt(movement.getPosition1());
+    Piece pieceAtPosition2 = game.getBoard().getPieceAt(movement.getPosition2());
+    game.getBoard().setPieceAt(movement.getPosition1(), null);
+    game.getBoard().setPieceAt(movement.getPosition2(), pieceAtPosition1);
+    boolean isOnCheckAfterMovement = game.isOnCheck(color);
+    game.getBoard().setPieceAt(movement.getPosition1(), pieceAtPosition1);
+    game.getBoard().setPieceAt(movement.getPosition2(), pieceAtPosition2);
+    return isOnCheckAfterMovement;
+  }
+
   private boolean isOnCheckMate(int color) throws Exception {
-    System.out.println("CHECKING IS ON CHECKMATE");
     Position allPositions[] = this.getAllPiecesPositions(color);
     for (Position position: allPositions) {
       Movement movements[] = this.getAllPossibleMovements(position);
       for (Movement movement: movements) {
-        System.out.println("MOVING FOR CHECK");
-        System.out.println(this.board);
         this.saveInfoForUndo(movement);
         this.movePiece(movement);
-        System.out.println(this.board);
         if (!this.isOnCheck(color)) {
-          System.out.println("NOT ON CHECKMATE");
           return false;
         }
         this.undoMove();
-        System.out.println("AFTER UNDO");
-        System.out.println(this.board);
       }
     }
     this.status = CHECKMATE;
-    System.out.println("CHECKMATE DETECTED");
     return true;
   }
 
   protected boolean isOnCheck(int color) {
-    System.out.println("CHECKING IS ON CHECK");
     Position kingPosition = this.board.getKingPosition(color);
     int enemyColor = this.getEnemyColor(color);
     Position allEnemyPositions[] = this.getAllPiecesPositions(enemyColor);
     for (Position enemyPosition: allEnemyPositions) {
       if (this.pieceCanHitEnemyKing(enemyPosition)){
         this.status = CHECK;
-        System.out.println("CHECK DETECTED");
         return true;
       }
     }
-    System.out.println("NOT ON CHECK");
     return false;
   }
 
@@ -216,6 +217,11 @@ public class Game {
       }
     }
     return pieceCanHitKing;
+  }
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+      return super.clone();
   }
 
 }
