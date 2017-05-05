@@ -89,6 +89,7 @@ export class BoardComponent implements OnInit {
   }
 
   click(x, y) {
+    this.resetColors();
     console.log("this.myPlayerNumber="+this.myPlayerNumber);
     console.log(this.myPlayerNumber == 1);
     console.log("clicked "+x+","+y);
@@ -157,6 +158,14 @@ export class BoardComponent implements OnInit {
       row.squares = row.squares.slice().reverse();
     }
     return board;
+  }
+
+  resetColors() {
+    for (let x=0; x<=7; x++) {
+      for (let y=0; y<=7; y++) {
+        this.game.board.rows[y].squares[x].color = null;
+      }
+    }
   }
 
 }
