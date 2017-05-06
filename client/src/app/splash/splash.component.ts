@@ -18,10 +18,7 @@ export class SplashComponent implements OnInit {
   }
 
   play() {
-    console.log("Connecting to websocket...");
-    //this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
-    this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
-    console.log("Creating new match...");
+    this.ws = new $WebSocket('ws://192.168.1.114:8088/game');
     this.sendNewMatchRequest();
     this.waitNewMatchRespose();
   }
@@ -29,9 +26,8 @@ export class SplashComponent implements OnInit {
   sendNewMatchRequest() {
     let movement:Movement = { x1: 0, y1: 0, x2: 0, y2: 0 }
     let uuid = UUID.UUID();
-    console.log("stored gameuuid: " + uuid);
     localStorage.setItem('gameUUID', uuid);
-    localStorage.setItem("myPlayerNumber", "0");
+    localStorage.setItem('myPlayerNumber', '0');
     let message:Message = {
       action: 'newGame',
       movement: movement,
@@ -45,9 +41,7 @@ export class SplashComponent implements OnInit {
       res => {
         let game = JSON.parse(res.data);
         if(game.uuid) {
-          console.log('Match created with uuid: ' + game.uuid);
           this.router.navigate(['/game/'+game.uuid]);
-          localStorage.setItem("game", JSON.stringify(game));
         }
       },
       function(e) { console.log('Error: ' + e.message); },

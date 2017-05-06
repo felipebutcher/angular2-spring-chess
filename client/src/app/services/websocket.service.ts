@@ -20,11 +20,11 @@ export class $WebSocket  {
     'CLOSED': 3,
     'RECONNECT_ABORTED': 4
   };
-  private  normalCloseCode = 1000;
-  private  reconnectableStatusCodes = [4000];
+  private normalCloseCode = 1000;
+  private reconnectableStatusCodes = [4000];
   private socket: WebSocket;
   private dataStream: Subject<any>;
-  private  internalConnectionState: number;
+  private internalConnectionState: number;
   private config: WebSocketConfig;
 
   constructor(private url:string, private protocols?:Array<string>) {
@@ -42,21 +42,17 @@ export class $WebSocket  {
       self.socket =this.protocols ? new WebSocket(this.url, this.protocols) : new WebSocket(this.url);
 
       self.socket.onopen =(ev: Event) => {
-        //    console.log('onOpen: %s', ev);
         this.onOpenHandler(ev);
       };
       self.socket.onmessage = (ev: MessageEvent) => {
-        //   console.log('onNext: %s', ev.data);
         self.onMessageHandler(ev);
         this.dataStream.next(ev);
       };
       this.socket.onclose = (ev: CloseEvent) => {
-        //     console.log('onClose, completed');
         self.onCloseHandler(ev);
       };
 
       this.socket.onerror = (ev: ErrorEvent) => {
-        //    console.log('onError', ev);
         self.onErrorHandler(ev);
         this.dataStream.error(ev);
       };
@@ -64,27 +60,12 @@ export class $WebSocket  {
     }
   }
   send(data) {
-    //console.log("trying to send: " + data);
     var self = this;
     if (this.getReadyState() != this.readyStateConstants.OPEN &&this.getReadyState() != this.readyStateConstants.CONNECTING ){
-      //console.log("reconnecting...");
       this.connect();
     }
-    console.log(data);
     self.sendQueue.push({message: data});
     self.fireQueue();
-    // return Observable.create((observer) => {
-    //   if (self.socket.readyState === self.readyStateConstants.RECONNECT_ABORTED) {
-    //     console.log('Socket connection has been closed');
-    //     observer.next('Socket connection has been closed');
-    //   }
-    //   else {
-    //     console.log("sending: " + data);
-    //     self.sendQueue.push({message: data});
-    //     self.fireQueue();
-    //   }
-    //
-    // });
   };
 
   getDataStream():Subject<any>{
@@ -108,7 +89,6 @@ export class $WebSocket  {
       this.socket.send(
         JSON.stringify(data.message)
       );
-      // data.deferred.resolve();
     }
   }
 
@@ -141,10 +121,6 @@ export class $WebSocket  {
 
 
   onMessage(callback, options) {
-    /*if (!isFunction(callback)) {
-      throw new Error('Callback must be a function');
-    }*/
-
     this.onMessageCallbacks.push({
       fn: callback,
       pattern: options ? options.filter : undefined,
@@ -163,6 +139,7 @@ export class $WebSocket  {
     }
 
   };
+
   onCloseHandler(event: CloseEvent) {
     this.notifyCloseCallbacks(event);
     if ((this.config.reconnectIfNotNormalClose && event.code !== this.normalCloseCode) || this.reconnectableStatusCodes.indexOf(event.code) > -1) {
@@ -175,10 +152,6 @@ export class $WebSocket  {
   onErrorHandler(event) {
     this.notifyErrorCallbacks(event);
   };
-
-
-
-
 
   reconnect() {
     this.close(true);
@@ -195,6 +168,7 @@ export class $WebSocket  {
     }
     return this;
   };
+
   // Exponential Backoff Formula by Prof. Douglas Thain
   // http://dthain.blogspot.co.uk/2009/02/exponential-backoff-in-distributed.html
   getBackoffDelay(attempt) {
@@ -227,8 +201,6 @@ export class $WebSocket  {
     }
     return this.internalConnectionState || this.socket.readyState;
   }
-
-
 
 }
 

@@ -28,123 +28,118 @@ export class BoardComponent implements OnInit {
       localStorage.setItem("myPlayerNumber", "1");
     }
     this.myPlayerNumber = +localStorage.getItem("myPlayerNumber");
-    console.log("myPlayerNumber: "+this.myPlayerNumber);
     this.game = {};
     this.game.board = {};
     this.game.board.rows = [];
     this.sub = this.route.params.subscribe(params => {
-      //this.game = JSON.parse(localStorage.getItem("game"));
       this.game.board.rows = [];
       this.gameUUID = params["gameUUID"];
-      console.log("gameUUID: "+this.gameUUID);
-      //this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
-      this.ws = new $WebSocket("ws://104.131.146.200:8088/game");
-      let movement:Movement = { position1: {x: 0, y: 0}, position2: {x: 0, y: 0} }
-      let message:Message = {
-        action: 'requestUpdate',
-        movement: movement,
-        gameUUID: this.gameUUID
-      }
-      this.ws.getDataStream().subscribe(
-        res => {
-          console.log(JSON.parse(res.data).type);
-          if (JSON.parse(res.data).type == "possibleMovements") {
-            let availableMovements = JSON.parse(res.data).possibleMovements;
-            console.log("received possible movements");
-            if (this.game.turnColor != this.myPlayerNumber) {
-              return;
-            }
-            for (let movement of availableMovements) {
-              if (this.myPlayerNumber == 1) {
-                movement.position2.x = 7-movement.position2.x;
-                movement.position2.y = 7-movement.position2.y;
-              }
-              console.log(movement.position2.x + "," + movement.position2.y);
-              this.game.board.rows[movement.position2.y].squares[movement.position2.x].color = "green";
-            }
-          }else {
-            if (this.game.turnColor != this.myPlayerNumber) {
-              this.playBeep();
-            }
-            let game = JSON.parse(res.data);
-            console.log('received game update: ' + game.uuid);
-            console.log(game);
-            if (game.status == 1 &&
-                //this.game.turnColor != this.myPlayerNumber &&
-                game.status != this.lastStatus) {
-              alert("CHECK");
-            }
-            if (game.status == 2 && game.status != this.lastStatus) {
-              alert("CHECKMATE");
-            }
-            this.lastStatus = game.status;
-            if (this.myPlayerNumber == 1) {
-              game.board = this.invertBoard(game.board);
-            }
-            this.game = game;
-          }
-        },
-        function(e) { console.log('Error: ' + e.message); },
-        function() { console.log('Completed'); }
-      );
-      this.ws.send(message);
+      this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
+      this.requestUpdate();
     });
   }
 
   click(x, y) {
     this.resetColors();
-    console.log("this.myPlayerNumber="+this.myPlayerNumber);
-    console.log(this.myPlayerNumber == 1);
-    console.log("clicked "+x+","+y);
     if (this.game.status == 2) {
       return;
     }
     if(this.game.board.rows[y].squares[x].piece &&
        this.game.board.rows[y].squares[x].piece.color == this.myPlayerNumber) {
-      if (this.game.turnColor != this.myPlayerNumber) {
-        return;
-      }
-      this.game.board.rows[y].squares[x].color = "red";
-      console.log("start movement");
-      let movement = { position1: {x: x, y: y}, position2: {x: null, y: null} };
-      if (this.myPlayerNumber == 1) {
-        movement = { position1: {x: 7-x, y: 7-y}, position2: {x: null, y: null} }
-      }
-      console.log("MOVEMENT: ");
-      console.log(this.movement);
-      let message:Message = {
-        action: 'requestPossibleMovements',
-        movement: movement,
-        gameUUID: this.gameUUID
-      }
-      this.ws.send(message);
-      this.movement = movement;
+      this.startMovement(x, y);
     }else if (this.movement.position1.x != null) {
-      console.log("make movement now");
-      console.log(this.myPlayerNumber);
-      console.log(this.myPlayerNumber == 0);
-      this.movement.position2.x = x;
-      this.movement.position2.y = y;
-      if (this.myPlayerNumber == 1) {
-        this.movement.position2.x = 7-x;
-        this.movement.position2.y = 7-y;
-      }
-      console.log("MOVEMENT: ");
-      console.log(this.movement);
-      let message:Message = {
-        action: 'move',
-        movement: this.movement,
-        gameUUID: this.gameUUID
-      }
-      this.ws.send(message);
-      //reset movement
-      this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
+      this.completeMovement(x, y);
     }
   }
 
+  startMovement(x: number, y: number) {
+    if (this.game.turnColor != this.myPlayerNumber) {
+      return;
+    }
+    this.game.board.rows[y].squares[x].color = "red";
+    let movement = { position1: {x: x, y: y}, position2: {x: null, y: null} };
+    if (this.myPlayerNumber == 1) {
+      movement = { position1: {x: 7-x, y: 7-y}, position2: {x: null, y: null} }
+    }
+    let message:Message = {
+      action: 'requestPossibleMovements',
+      movement: movement,
+      gameUUID: this.gameUUID
+    }
+    this.ws.send(message);
+    this.movement = movement;
+  }
+
+  completeMovement(x: number, y: number) {
+    this.movement.position2.x = x;
+    this.movement.position2.y = y;
+    if (this.myPlayerNumber == 1) {
+      this.movement.position2.x = 7-x;
+      this.movement.position2.y = 7-y;
+    }
+    let message:Message = {
+      action: 'move',
+      movement: this.movement,
+      gameUUID: this.gameUUID
+    }
+    this.ws.send(message);
+    this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
+  }
+
+  requestUpdate() {
+    let movement:Movement = { position1: {x: 0, y: 0}, position2: {x: 0, y: 0} }
+    let message:Message = {
+      action: 'requestUpdate',
+      movement: movement,
+      gameUUID: this.gameUUID
+    }
+    this.ws.getDataStream().subscribe(
+      res => {
+        if (JSON.parse(res.data).type == "possibleMovements") {
+          let availableMovements = JSON.parse(res.data).possibleMovements;
+          this.processAvailableMovements(availableMovements);
+        }else {
+          let game = JSON.parse(res.data);
+          this.updateBoard(game);
+        }
+      },
+      function(e) { console.log('Error: ' + e.message); },
+      function() { console.log('Completed'); }
+    );
+    this.ws.send(message);
+  }
+
+  processAvailableMovements(availableMovements: any) {
+    if (this.game.turnColor != this.myPlayerNumber) {
+      return;
+    }
+    for (let movement of availableMovements) {
+      if (this.myPlayerNumber == 1) {
+        movement.position2.x = 7-movement.position2.x;
+        movement.position2.y = 7-movement.position2.y;
+      }
+      this.game.board.rows[movement.position2.y].squares[movement.position2.x].color = "green";
+    }
+  }
+
+  updateBoard(game: any) {
+    if (game.status == 1 && game.status != this.lastStatus) {
+      alert("CHECK");
+    }
+    if (game.status == 2 && game.status != this.lastStatus) {
+      alert("CHECKMATE");
+    }
+    this.lastStatus = game.status;
+    if (this.myPlayerNumber == 1) {
+      game.board = this.invertBoard(game.board);
+    }
+    this.game = game;
+    this.playBeep();
+  }
+
   playBeep() {
-    var audio = new Audio();
-    audio.src = "https://www.soundjay.com/button/sounds/beep-08b.mp3";
+    let audio = new Audio();
+    audio.src = "http://cam.dynadrop.com/chess/chessmove.mp3";
     audio.load();
     audio.play();
   }
@@ -178,6 +173,7 @@ export class BoardComponent implements OnInit {
   }
 
 }
+
 
 interface Message {
   action: string;
