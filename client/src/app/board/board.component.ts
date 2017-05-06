@@ -10,6 +10,7 @@ import { $WebSocket } from '../services/websocket.service';
 export class BoardComponent implements OnInit {
   private ws: $WebSocket;
   public  boardSize: number;
+  public  squareSize: number;
   private fontSize: number;
   private gameUUID: string;
   private sub: any;
@@ -152,8 +153,9 @@ export class BoardComponent implements OnInit {
 
   resize() {
     this.boardSize = Math.min(window.innerHeight, window.innerWidth) - 20;
-    let squareSize = this.boardSize/8;
-    this.fontSize = Math.floor(100*squareSize/16/1.8)/100;
+    this.squareSize = this.boardSize/8;
+    this.fontSize = Math.floor(100*this.squareSize/16/1.8)/100;
+
   }
 
   invertBoard(board) {
