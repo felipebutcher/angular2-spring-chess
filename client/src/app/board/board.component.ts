@@ -63,6 +63,9 @@ export class BoardComponent implements OnInit {
               this.game.board.rows[movement.position2.y].squares[movement.position2.x].color = "green";
             }
           }else {
+            if (this.game.turnColor != this.myPlayerNumber) {
+              this.playBeep();
+            }
             let game = JSON.parse(res.data);
             console.log('received game update: ' + game.uuid);
             console.log(game);
@@ -137,7 +140,13 @@ export class BoardComponent implements OnInit {
       //reset movement
       this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
     }
+  }
 
+  playBeep() {
+    var audio = new Audio();
+    audio.src = "https://www.soundjay.com/button/sounds/beep-08b.mp3";
+    audio.load();
+    audio.play();
   }
 
   ngAfterViewInit() {
