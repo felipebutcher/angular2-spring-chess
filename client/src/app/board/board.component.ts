@@ -13,9 +13,11 @@ export class BoardComponent implements OnInit {
   public  squareSize: number;
   private fontSize: number;
   private gameUUID: string;
+  private requestUUID: string;
   private sub: any;
   private movement: Movement;
   private myPlayerNumber: number;
+  private myPlayerUUID: string;
   private lastStatus: number;
   game: any;
 
@@ -25,17 +27,18 @@ export class BoardComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!localStorage.getItem("myPlayerNumber")) {
-      localStorage.setItem("myPlayerNumber", "1");
-    }
-    this.myPlayerNumber = +localStorage.getItem("myPlayerNumber");
     this.game = {};
     this.game.board = {};
     this.game.board.rows = [];
     this.sub = this.route.params.subscribe(params => {
       this.game.board.rows = [];
       this.gameUUID = params["gameUUID"];
+      if (localStorage.getItem("myPlayerUUID"+params["gameUUID"])) {
+        this.myPlayerUUID = localStorage.getItem("myPlayerUUID"+params["gameUUID"]);
+      }
       this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
+      this.subscribeToWebSocket();
+      this.requestJoinGame();
       this.requestUpdate();
     });
   }
@@ -65,7 +68,9 @@ export class BoardComponent implements OnInit {
     let message:Message = {
       action: 'requestPossibleMovements',
       movement: movement,
-      gameUUID: this.gameUUID
+      gameUUID: this.gameUUID,
+      playerUUID: this.myPlayerUUID,
+      requestUUID: null
     }
     this.ws.send(message);
     this.movement = movement;
@@ -81,33 +86,78 @@ export class BoardComponent implements OnInit {
     let message:Message = {
       action: 'move',
       movement: this.movement,
-      gameUUID: this.gameUUID
+      gameUUID: this.gameUUID,
+      playerUUID: this.myPlayerUUID,
+      requestUUID: null
     }
     this.ws.send(message);
     this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
   }
 
-  requestUpdate() {
-    let movement:Movement = { position1: {x: 0, y: 0}, position2: {x: 0, y: 0} }
-    let message:Message = {
-      action: 'requestUpdate',
-      movement: movement,
-      gameUUID: this.gameUUID
-    }
+  subscribeToWebSocket() {
     this.ws.getDataStream().subscribe(
       res => {
         if (JSON.parse(res.data).type == "possibleMovements") {
           let availableMovements = JSON.parse(res.data).possibleMovements;
           this.processAvailableMovements(availableMovements);
-        }else {
-          let game = JSON.parse(res.data);
+        } else if (JSON.parse(res.data).type == "joinGame") {
+          if (this.requestUUID == JSON.parse(res.data).requestUUID) {
+            let assignedPlayerNumber = JSON.parse(res.data).assignedPlayerNumber;
+            let assignedPlayerUUID = JSON.parse(res.data).assignedPlayerUUID;
+            this.joinGame(assignedPlayerNumber, assignedPlayerUUID);
+            this.updateBoard(this.game);
+          }
+        } else if (JSON.parse(res.data).type == "updateBoard") {
+          let game = JSON.parse(res.data).game;
           this.updateBoard(game);
         }
       },
       function(e) { console.log('Error: ' + e.message); },
       function() { console.log('Completed'); }
     );
+  }
+
+  requestUpdate() {
+    let message:Message = {
+      action: 'requestUpdate',
+      movement: null,
+      gameUUID: this.gameUUID,
+      playerUUID: this.myPlayerUUID,
+      requestUUID: null
+    }
     this.ws.send(message);
+  }
+
+  requestJoinGame() {
+    this.requestUUID = this.generateUUID();
+    let message:Message = {
+      action: 'joinGame',
+      playerUUID: this.myPlayerUUID,
+      movement: null,
+      gameUUID: this.gameUUID,
+      requestUUID: this.requestUUID
+    }
+    this.ws.send(message);
+  }
+
+  joinGame(playerNumber, playerUUID) {
+    this.myPlayerNumber = playerNumber;
+    if (playerUUID != null) {
+      this.myPlayerUUID = playerUUID;
+      localStorage.setItem("myPlayerUUID"+this.gameUUID, playerUUID);
+    }
+  }
+
+  generateUUID() {
+    let d = new Date().getTime();
+    if (window.performance && typeof window.performance.now === "function") {
+        d += performance.now(); //use high-precision timer if available
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        let r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
   }
 
   processAvailableMovements(availableMovements: any) {
@@ -155,7 +205,6 @@ export class BoardComponent implements OnInit {
     this.boardSize = Math.min(window.innerHeight, window.innerWidth) - 20;
     this.squareSize = this.boardSize/8;
     this.fontSize = Math.floor(100*this.squareSize/16/1.8)/100;
-
   }
 
   invertBoard(board) {
@@ -181,6 +230,8 @@ interface Message {
   action: string;
   movement: Movement;
   gameUUID: string;
+  playerUUID: string;
+  requestUUID: string;
 }
 
 interface Movement {

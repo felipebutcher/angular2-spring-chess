@@ -4,10 +4,14 @@
 
 
 //TODO
--change the GREEN movements to something cleaner
--third person that access the link should watch the game (can't  click)
+-more complete test
+-log4j
+-delete timed out games
+-delete finished games (check used memory)
 -pawn switch when reaches end of table
 -king switch with rook
+-performance testing
+-change the GREEN movements to something cleaner
 -timer
 
 //INSTALLATION:

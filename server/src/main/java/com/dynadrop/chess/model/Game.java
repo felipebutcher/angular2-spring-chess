@@ -26,9 +26,8 @@ public class Game implements Cloneable {
   public static final int CHECKMATE = 2;
 
 
-  public Game(Player player1, String uuid) {
+  public Game(String uuid) {
     this.board = new Board();
-    this.player1 = player1;
     this.uuid = uuid;
     this.status = STARTED;
     this.turnColor = Piece.WHITE;
@@ -47,8 +46,22 @@ public class Game implements Cloneable {
     return this.player2;
   }
 
-  public void joinGame(Player player2) {
-    this.player2 = player2;
+  public void setPlayer1(Player player) {
+    this.player1 = player;
+  }
+
+  public void setPlayer2(Player player) {
+    this.player2 = player;
+  }
+
+  public Player getPlayerByUUID(String uuid) {
+    if (this.player1 != null && this.player1.getUUID().equals(uuid)) {
+      return player1;
+    }else if (this.player2 != null && this.player2.getUUID().equals(uuid)) {
+      return player2;
+    }else {
+      return null;
+    }
   }
 
   public String getUUID() {

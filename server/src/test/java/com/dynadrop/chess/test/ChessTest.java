@@ -15,8 +15,9 @@ public class ChessTest {
 
   @Before
   public void initialize() {
-    this.game = new Game(new Player(), "UUID");
-    this.game.joinGame(new Player());
+    this.game = new Game("UUID");
+    this.game.setPlayer1(new Player());
+    this.game.setPlayer2(new Player());
   }
 
   @Test

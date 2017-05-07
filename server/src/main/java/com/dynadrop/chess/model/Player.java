@@ -3,14 +3,14 @@ package com.dynadrop.chess.model;
 import java.util.UUID;
 
 public class Player {
-  private String id;
+  private String uuid;
 
   public Player() {
-    this.id = UUID.randomUUID().toString();
+    this.uuid = UUID.randomUUID().toString();
   }
 
-  public String getId() {
-    return this.id;
+  public String getUUID() {
+    return this.uuid;
   }
 
 }
