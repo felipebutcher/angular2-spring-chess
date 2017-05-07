@@ -8,7 +8,7 @@ import { $WebSocket } from '../services/websocket.service';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
-  private wsUrl: string = "ws://192.168.1.114:8088/game";
+  private wsUrl: string = "ws://cam.dynadrop.com:8088/game";
   private ws: $WebSocket;
   public  boardSize: number;
   public  squareSize: number;

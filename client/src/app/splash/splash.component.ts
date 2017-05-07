@@ -10,7 +10,7 @@ import { UUID } from 'angular2-uuid';
 })
 export class SplashComponent implements OnInit {
   ws: $WebSocket;
-  wsUrl: string = 'ws://192.168.1.114:8088/game';
+  wsUrl: string = 'ws://cam.dynadrop.com:8088/game';
 
   constructor(private router:Router) { }
 
