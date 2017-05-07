@@ -8,6 +8,7 @@ import { $WebSocket } from '../services/websocket.service';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
+  private wsUrl: string = "ws://192.168.1.114:8088/game";
   private ws: $WebSocket;
   public  boardSize: number;
   public  squareSize: number;
@@ -36,7 +37,7 @@ export class BoardComponent implements OnInit {
       if (localStorage.getItem("myPlayerUUID"+params["gameUUID"])) {
         this.myPlayerUUID = localStorage.getItem("myPlayerUUID"+params["gameUUID"]);
       }
-      this.ws = new $WebSocket("ws://192.168.1.114:8088/game");
+      this.ws = new $WebSocket(this.wsUrl);
       this.subscribeToWebSocket();
       this.requestJoinGame();
       this.requestUpdate();

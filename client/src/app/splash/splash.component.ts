@@ -10,6 +10,7 @@ import { UUID } from 'angular2-uuid';
 })
 export class SplashComponent implements OnInit {
   ws: $WebSocket;
+  wsUrl: string = 'ws://192.168.1.114:8088/game';
 
   constructor(private router:Router) { }
 
@@ -18,7 +19,7 @@ export class SplashComponent implements OnInit {
   }
 
   play() {
-    this.ws = new $WebSocket('ws://192.168.1.114:8088/game');
+    this.ws = new $WebSocket(this.wsUrl);
     this.sendNewMatchRequest();
     this.waitNewMatchRespose();
   }

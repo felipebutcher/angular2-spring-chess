@@ -71,6 +71,10 @@ public class Game implements Cloneable {
   public int getStatus() throws Exception {
     if (this.isOnCheckMate(Piece.WHITE) || this.isOnCheckMate(Piece.BLACK)) {
       this.status = CHECKMATE;
+    } else if (this.isOnCheck(Piece.WHITE) || this.isOnCheck(Piece.BLACK)) {
+      this.status = CHECK;
+    } else {
+      this.status = STARTED;
     }
     return this.status;
   }
