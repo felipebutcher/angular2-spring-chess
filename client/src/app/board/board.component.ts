@@ -175,10 +175,10 @@ export class BoardComponent implements OnInit {
   }
 
   updateBoard(game: any) {
-    if (game.status == 1 && game.status != this.lastStatus) {
+    if (game.status == 1 && game.status != this.lastStatus && this.myPlayerNumber != 2) {
       alert("CHECK");
     }
-    if (game.status == 2 && game.status != this.lastStatus) {
+    if (game.status == 2 && game.status != this.lastStatus && this.myPlayerNumber != 2) {
       alert("CHECKMATE");
     }
     this.lastStatus = game.status;
