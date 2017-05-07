@@ -46,28 +46,64 @@ public class ChessTest {
 
   @Test
   public void testPawnMove() throws Exception {
-    this.testMovePiece(new Movement(new Position(0,6), new Position(0,4)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(7,1), new Position(7,3)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(7,6), new Position(7,4)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(6,1), new Position(6,3)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(1,6), new Position(1,5)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(5,1), new Position(5,3)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(2,6), new Position(3,5)), false, Pawn.class);
+    this.testMovePiece(new Movement(new Position(0,6), new Position(0,4)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(7,1), new Position(7,3)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(7,6), new Position(7,4)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(6,1), new Position(6,3)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(1,6), new Position(1,5)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(5,1), new Position(5,3)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(2,6), new Position(3,5)), false, Pawn.class, Piece.WHITE);
   }
 
   @Test
   public void testFoolsMate() throws Exception {
-    this.testMovePiece(new Movement(new Position(6,6), new Position(6,4)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(4,1), new Position(4,2)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(5,6), new Position(5,4)), true, Pawn.class);
-    this.testMovePiece(new Movement(new Position(3,0), new Position(7,4)), true, Queen.class);
+    this.testMovePiece(new Movement(new Position(6,6), new Position(6,4)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(4,1), new Position(4,2)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(5,6), new Position(5,4)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(3,0), new Position(7,4)), true, Queen.class, Piece.BLACK);
     assertEquals(Game.CHECKMATE, this.game.getStatus());
   }
 
-  private void testMovePiece(Movement movement, boolean expected, Class classObj) throws Exception {
+  @Test
+  public void testCompleteMatch() throws Exception {
+    this.testMovePiece(new Movement(new Position(6,7), new Position(5,5)), true, Knight.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(2,1), new Position(2,3)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(3,6), new Position(3,5)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(3,0), new Position(0,3)), true, Queen.class, Piece.BLACK);
+    assertEquals(Game.CHECK, this.game.getStatus());
+    this.testMovePiece(new Movement(new Position(1,7), new Position(3,6)), true, Knight.class, Piece.WHITE);
+    assertEquals(Game.STARTED, this.game.getStatus());
+    this.testMovePiece(new Movement(new Position(6,1), new Position(6,2)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(3,6), new Position(4,4)), false, Knight.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(1,6), new Position(1,4)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(0,3), new Position(1,4)), true, Queen.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(5,5), new Position(4,3)), true, Knight.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(1,4), new Position(3,6)), true, Queen.class, Piece.BLACK);
+    assertEquals(Game.CHECK, this.game.getStatus());
+    this.testMovePiece(new Movement(new Position(3,7), new Position(3,6)), true, Queen.class, Piece.WHITE);
+    assertEquals(Game.STARTED, this.game.getStatus());
+    this.testMovePiece(new Movement(new Position(5,0), new Position(7,2)), true, Bishop.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(0,6), new Position(0,4)), true, Pawn.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(4,0), new Position(3,0)), true, King.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(0,7), new Position(0,5)), true, Rook.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(3,1), new Position(3,3)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(0,5), new Position(2,5)), true, Rook.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(6,0), new Position(5,2)), true, Knight.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(2,5), new Position(2,3)), true, Rook.class, Piece.WHITE);
+    this.testMovePiece(new Movement(new Position(0,1), new Position(0,2)), true, Pawn.class, Piece.BLACK);
+    this.testMovePiece(new Movement(new Position(3,6), new Position(0,3)), true, Queen.class, Piece.WHITE);
+    assertEquals(Game.CHECK, this.game.getStatus());
+    this.testMovePiece(new Movement(new Position(3,0), new Position(4,0)), true, King.class, Piece.BLACK);
+    assertEquals(Game.STARTED, this.game.getStatus());
+    this.testMovePiece(new Movement(new Position(2,3), new Position(2,0)), true, Rook.class, Piece.WHITE);
+    assertEquals(Game.CHECKMATE, this.game.getStatus());
+  }
+
+  private void testMovePiece(Movement movement, boolean expected, Class classObj, int color) throws Exception {
     assertEquals(expected, this.game.movePiece(movement));
     if (this.getPieceAt(movement.getPosition2()) != null) {
       assertEquals(classObj, this.getPieceAt(movement.getPosition2()).getClass());
+      assertEquals(color, this.getPieceAt(movement.getPosition2()).getColor());
     }
   }
 
