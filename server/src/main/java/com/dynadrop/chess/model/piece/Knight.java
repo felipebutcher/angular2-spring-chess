@@ -3,7 +3,6 @@ package com.dynadrop.chess.model.piece;
 import com.dynadrop.chess.model.Piece;
 import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.websocket.bean.Position;
-import com.dynadrop.chess.websocket.bean.Movement;
 import com.dynadrop.chess.websocket.bean.Direction;
 import java.util.ArrayList;
 
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 public class Knight implements Piece {
   private String htmlCode;
   private int color;
+  private boolean moved;
 
   public Knight(int color) {
     this.color = color;
@@ -19,6 +19,14 @@ public class Knight implements Piece {
 
   public int getColor() {
     return this.color;
+  }
+
+  public boolean hasMoved() {
+    return this.moved;
+  }
+
+  public void setMoved(boolean moved) {
+    this.moved = moved;
   }
 
   public Direction[] getDirections(Board board, Position position) {

@@ -83,8 +83,10 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             game.addWebSocketSessionId(session.getId());
-            game.movePiece(message.movement);
+            boolean moved = game.movePiece(message.movement);
             game.getStatus();//update game status
+            System.out.println(game.getBoard());
+            System.out.println("MOVEMENT DONE: "+message.movement);
             ReturnMessage returnMessage = new ReturnMessage();
             returnMessage.type = "updateBoard";
             returnMessage.game = game;

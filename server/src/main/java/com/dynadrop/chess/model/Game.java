@@ -9,7 +9,7 @@ import com.dynadrop.chess.websocket.bean.Position;
 import com.dynadrop.chess.websocket.bean.Direction;
 import java.util.ArrayList;
 
-public class Game implements Cloneable {
+public class Game {
   private Board board;
   private Player player1;
   private Player player2;
@@ -100,39 +100,77 @@ public class Game implements Cloneable {
   }
 
   public boolean movePiece(Movement movement) throws Exception{
-    System.out.println("Requested movement: "+movement);
     Piece piece = this.board.getPieceAt(movement.getPosition1());
     if (piece.getColor() != this.turnColor) {
-      System.out.println("Movement is NOT VALID, wrong player turn");
       return false;
     }
     Movement possibleMovements[] = this.getAllPossibleMovements(movement.getPosition1());
     for(Movement possibleMovement: possibleMovements) {
-      System.out.println("Possible movement: "+possibleMovement);
       int enemyColor = this.getEnemyColor(piece.getColor());
       if (movement.equals(possibleMovement) &&
           !this.isOnCheckAfterMovement(piece.getColor(), movement) &&
           this.status != CHECKMATE) {
-        this.board.setPieceAt(movement.getPosition1(), null);
-        this.board.setPieceAt(movement.getPosition2(), piece);
-        System.out.println(this.board);
-        System.out.println("Movement is VALID");
-        if (this.turnColor == Piece.WHITE) {
-          this.turnColor = Piece.BLACK;
+        if (this.isCastling(movement)) {
+          this.doCastling(movement);
         } else {
-          this.turnColor = Piece.WHITE;
+          this.board.setPieceAt(movement.getPosition1(), null);
+          this.board.setPieceAt(movement.getPosition2(), piece);
         }
+        System.out.println(this.board);
+        Piece pieceAfterMove = this.board.getPieceAt(movement.getPosition2());
+        pieceAfterMove.setMoved(true);
+        this.switchTurnColor();
         this.isOnCheck(this.getEnemyColor(piece.getColor()));
         return true;
       }
     }
-    System.out.println("Movement is NOT VALID");
     return false;
+  }
+
+  private boolean isCastling(Movement movement) {
+    if (this.board.getPieceAt(movement.getPosition1()).getClass().equals(King.class) &&
+       (movement.getPosition1().getX() == movement.getPosition2().getX() - 2 ||
+        movement.getPosition1().getX() == movement.getPosition2().getX() + 2)) {
+      return true;
+    }
+    return false;
+  }
+
+  private void doCastling(Movement movement) {
+    System.out.println("castling done")
+    int y = movement.getPosition2().getY();
+    if (movement.getPosition1().getX() == movement.getPosition2().getX() + 2) {
+      //castling left
+      Rook rook = (Rook) this.board.getPieceAt(new Position(0, y));
+      this.board.setPieceAt(new Position(0, y), null);
+      King king = (King) this.board.getPieceAt(movement.getPosition1());
+      this.board.setPieceAt(movement.getPosition1(), null);
+      this.board.setPieceAt(new Position(2, y), king);
+      this.board.setPieceAt(new Position(3, y), rook);
+    }else if (movement.getPosition1().getX() == movement.getPosition2().getX() - 2) {
+      //castling right
+      Rook rook = (Rook) this.board.getPieceAt(new Position(7, y));
+      this.board.setPieceAt(new Position(7, y), null);
+      King king = (King) this.board.getPieceAt(movement.getPosition1());
+      this.board.setPieceAt(movement.getPosition1(), null);
+      this.board.setPieceAt(new Position(5, y), rook);
+      this.board.setPieceAt(new Position(6, y), king);
+    }
+  }
+
+  private void switchTurnColor() {
+    if (this.turnColor == Piece.WHITE) {
+      this.turnColor = Piece.BLACK;
+    } else {
+      this.turnColor = Piece.WHITE;
+    }
   }
 
   public void undoMove() {
     this.board.setPieceAt(this.lastMovement.getPosition1(), this.lastPieceAtPosition1);
     this.board.setPieceAt(this.lastMovement.getPosition2(), this.lastPieceAtPosition2);
+    this.switchTurnColor();
+    this.lastPieceAtPosition1.setMoved(false);
   }
 
   private void saveInfoForUndo(Movement movement) {
@@ -146,9 +184,7 @@ public class Game implements Cloneable {
     Piece piece = this.board.getPieceAt(position);
     if (piece != null) {
       Direction directions[] = piece.getDirections(this.board, position);
-      //System.out.println("Directions for "+piece.getClass());
       for (Direction direction: directions) {
-        //System.out.println("Direction: "+direction.getX()+","+direction.getY()+" limit:"+direction.getLimit());
         Position positionFrom = position;
         Position positionTo = new Position(positionFrom.getX()+direction.getX(), positionFrom.getY()+direction.getY());
         int i = 0;
@@ -173,7 +209,10 @@ public class Game implements Cloneable {
       return false;
     }
     Piece pieceAtDestination = this.board.getPieceAt(position);
-    if (pieceAtDestination == null || piece.getColor()!=pieceAtDestination.getColor()) {
+    if (pieceAtDestination == null ||
+        piece.getColor() != pieceAtDestination.getColor() ||
+        (piece.getClass().equals(King.class) &&
+         pieceAtDestination.getClass().equals(Rook.class))) {
       return true;
     } else {
       return false;
@@ -199,14 +238,13 @@ public class Game implements Cloneable {
   }
 
   private boolean isOnCheckAfterMovement(int color, Movement movement) throws Exception {
-    Game game = (Game)this.clone();
-    Piece pieceAtPosition1 = game.getBoard().getPieceAt(movement.getPosition1());
-    Piece pieceAtPosition2 = game.getBoard().getPieceAt(movement.getPosition2());
-    game.getBoard().setPieceAt(movement.getPosition1(), null);
-    game.getBoard().setPieceAt(movement.getPosition2(), pieceAtPosition1);
-    boolean isOnCheckAfterMovement = game.isOnCheck(color);
-    game.getBoard().setPieceAt(movement.getPosition1(), pieceAtPosition1);
-    game.getBoard().setPieceAt(movement.getPosition2(), pieceAtPosition2);
+    Piece pieceAtPosition1 = this.board.getPieceAt(movement.getPosition1());
+    Piece pieceAtPosition2 = this.board.getPieceAt(movement.getPosition2());
+    this.board.setPieceAt(movement.getPosition1(), null);
+    this.board.setPieceAt(movement.getPosition2(), pieceAtPosition1);
+    boolean isOnCheckAfterMovement = this.isOnCheck(color);
+    this.board.setPieceAt(movement.getPosition1(), pieceAtPosition1);
+    this.board.setPieceAt(movement.getPosition2(), pieceAtPosition2);
     return isOnCheckAfterMovement;
   }
 
@@ -215,11 +253,10 @@ public class Game implements Cloneable {
     for (Position position: allPositions) {
       Movement movements[] = this.getAllPossibleMovements(position);
       for (Movement movement: movements) {
-        Game game = (Game) this.clone();
-        game.saveInfoForUndo(movement);
-        boolean moved = game.movePiece(movement);
-        boolean isOnCheck = game.isOnCheck(color);
-        if (moved) game.undoMove();
+        this.saveInfoForUndo(movement);
+        boolean moved = this.movePiece(movement);
+        boolean isOnCheck = this.isOnCheck(color);
+        if (moved) this.undoMove();
         if (!isOnCheck) return false;
       }
     }

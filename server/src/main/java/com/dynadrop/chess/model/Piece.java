@@ -10,5 +10,7 @@ public interface Piece {
 
   int getColor();
   Direction[] getDirections(Board board, Position position);
+  boolean hasMoved();
+  void setMoved(boolean moved);
 
 }

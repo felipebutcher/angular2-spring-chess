@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class Bishop implements Piece {
   private String htmlCode;
   private int color;
+  private boolean moved;
 
   public Bishop(int color) {
     this.color = color;
@@ -19,6 +20,14 @@ public class Bishop implements Piece {
 
   public int getColor() {
     return this.color;
+  }
+
+  public boolean hasMoved() {
+    return this.moved;
+  }
+
+  public void setMoved(boolean moved) {
+    this.moved = moved;
   }
 
   public Direction[] getDirections(Board board, Position position) {

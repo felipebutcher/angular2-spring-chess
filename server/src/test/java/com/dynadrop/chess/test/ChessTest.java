@@ -12,10 +12,11 @@ import com.dynadrop.chess.websocket.bean.Position;
 
 public class ChessTest {
   Game game;
+  private static int i=0;
 
   @Before
   public void initialize() {
-    this.game = new Game("UUID");
+    this.game = new Game("UUID_"+i++);
     this.game.setPlayer1(new Player());
     this.game.setPlayer2(new Player());
   }
@@ -97,6 +98,23 @@ public class ChessTest {
     assertEquals(Game.STARTED, this.game.getStatus());
     this.testMovePiece(new Movement(new Position(2,3), new Position(2,0)), true, Rook.class, Piece.WHITE);
     assertEquals(Game.CHECKMATE, this.game.getStatus());
+  }
+
+  @Test
+  public void testCastling() throws Exception {
+    this.testMovePiece(new Movement(new Position(6,7), new Position(7,5)), true);
+    this.testMovePiece(new Movement(new Position(7,1), new Position(7,2)), true);
+    this.testMovePiece(new Movement(new Position(4,6), new Position(4,5)), true);
+    this.testMovePiece(new Movement(new Position(0,1), new Position(0,2)), true);
+    this.testMovePiece(new Movement(new Position(5,7), new Position(3,5)), true);
+    this.testMovePiece(new Movement(new Position(1,1), new Position(1,2)), true);
+    this.testMovePiece(new Movement(new Position(4,7), new Position(6,7)), true);
+    assertEquals(King.class, this.getPieceAt(new Position(6,7)).getClass());
+    assertEquals(Rook.class, this.getPieceAt(new Position(5,7)).getClass());
+  }
+
+  private void testMovePiece(Movement movement, boolean expected) throws Exception {
+    assertEquals(expected, this.game.movePiece(movement));
   }
 
   private void testMovePiece(Movement movement, boolean expected, Class classObj, int color) throws Exception {

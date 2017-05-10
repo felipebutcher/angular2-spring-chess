@@ -11,14 +11,24 @@ import java.util.ArrayList;
 public class Rook implements Piece {
   private String htmlCode;
   private int color;
+  private boolean moved;
 
   public Rook(int color) {
     this.color = color;
     this.htmlCode = "&#9820;";
+    this.moved = false;
   }
 
   public int getColor() {
     return this.color;
+  }
+
+  public boolean hasMoved() {
+    return this.moved;
+  }
+
+  public void setMoved(boolean moved) {
+    this.moved = moved;
   }
 
   public Direction[] getDirections(Board board, Position position) {
