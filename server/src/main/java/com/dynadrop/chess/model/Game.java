@@ -158,7 +158,6 @@ public class Game {
           this.board.setPieceAt(movement.getPosition1(), null);
           this.board.setPieceAt(movement.getPosition2(), piece);
         }
-        System.out.println(this.board);
         Piece pieceAfterMove = this.board.getPieceAt(movement.getPosition2());
         pieceAfterMove.setMoved(true);
         this.switchTurnColor();

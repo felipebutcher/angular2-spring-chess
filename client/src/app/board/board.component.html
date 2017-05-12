@@ -9,6 +9,7 @@
       [style.height.px]="squareSize"
       (click)="click(x,y)"
       [style.background]="square.color"
+      [style.border]="square.border"
       [ngClass]="square.piece && square.piece.color == 0 ? 'WP' : 'BP'"
       [innerHTML]="square.piece == null ? '' : square.piece.htmlCode">
     </td>

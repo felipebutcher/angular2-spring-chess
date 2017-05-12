@@ -4,14 +4,10 @@
 
 
 //TODO
--pawn switch when reaches end of table
--king switch with rook
 -log4j
--more complete test
 -delete timed out games
 -delete finished games (check used memory)
 -performance testing
--change the GREEN movements to something cleaner
 -timer
 
 //INSTALLATION:
