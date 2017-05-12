@@ -66,7 +66,7 @@ export class BoardComponent implements OnInit {
       return;
     }
     //this.game.board.rows[y].squares[x].color = "red";
-    this.game.board.rows[y].squares[x].border = "2px solid #333";
+    this.game.board.rows[y].squares[x].border = "2px solid #FFC926";
 
     let movement = { position1: {x: x, y: y}, position2: {x: null, y: null} };
     if (this.myPlayerNumber == 1) {
@@ -181,7 +181,7 @@ export class BoardComponent implements OnInit {
         movement.position2.y = 7-movement.position2.y;
       }
       //this.game.board.rows[movement.position2.y].squares[movement.position2.x].color = "green";
-      this.game.board.rows[movement.position2.y].squares[movement.position2.x].border = "2px solid #333";
+      this.game.board.rows[movement.position2.y].squares[movement.position2.x].border = "2px solid #FFC926";
     }
   }
 
