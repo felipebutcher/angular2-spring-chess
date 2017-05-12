@@ -186,11 +186,23 @@ export class BoardComponent implements OnInit {
   }
 
   updateBoard(game: any) {
-    if (game.status == 1 && game.status != this.lastStatus && this.myPlayerNumber != 2) {
-      alert("CHECK");
+    if (game.status == 1 &&
+        game.status != this.lastStatus &&
+        this.myPlayerNumber != 2 &&
+        this.myPlayerNumber == game.turnColor) {
+      this.modal.alert()
+          .title('CHECK')
+          .body('You are in CHECK.')
+          .open();
     }
-    if (game.status == 2 && game.status != this.lastStatus && this.myPlayerNumber != 2) {
-      alert("CHECKMATE");
+    if (game.status == 2 &&
+        game.status != this.lastStatus &&
+        this.myPlayerNumber != 2 &&
+        this.myPlayerNumber == game.turnColor) {
+      this.modal.alert()
+          .title('CHECKMATE')
+          .body('You lost.')
+          .open();
     }
     if (game.isPromotion && game.turnColor == this.myPlayerNumber) {
       this.modal.open(PromotionModal,  overlayConfigFactory({ num1: 2, num2: 3 }, BSModalContext))
@@ -207,7 +219,6 @@ export class BoardComponent implements OnInit {
   }
 
   doPromote(piece: string) {
-    alert("doPromote:"+piece);
     let message:Message = {
       action: 'doPromote',
       movement: null,
