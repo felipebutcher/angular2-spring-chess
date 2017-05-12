@@ -172,9 +172,9 @@ public class Game {
 
   public boolean isPromotion(Movement movement) {
     Piece piece = this.board.getPieceAt(movement.getPosition2());
-    System.out.println("piece.getClass() = " + piece.getClass());
-    System.out.println("piece.getColor() = " + piece.getColor());
-    System.out.println("movement.getPosition2().getY() = " + movement.getPosition2().getY());
+    if (piece == null) {
+      return false;
+    }
     if (piece.getClass().equals(Pawn.class) &&
         piece.getColor() == Piece.WHITE &&
         movement.getPosition2().getY() == 0) {
