@@ -36,7 +36,7 @@ export class PromotionModalContext extends BSModalContext {
                     <h1>Promotion - Pick one</h1>
                 </div>
             </div>
-            <div class="row" [ngClass]="{'myclass' : shouldUseMyClass}">
+            <div class="row">
                 <div class="col-xs-12">
                     <div class="jumbotron">
                         <span style="cursor: pointer; font-size: 6em;" (click)="pickPiece('Queen')">&#9819;</span>&nbsp;&nbsp;&nbsp;
