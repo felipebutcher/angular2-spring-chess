@@ -36,7 +36,8 @@ public class Pawn implements Piece {
     if (this.color == Piece.BLACK) {
       delta = -1;
     }
-    if ((position.getY() == 6 || position.getY() == 1) &&
+    if (((position.getY() == 6 && this.getColor() == Piece.WHITE) || 
+        (position.getY() == 1 && this.getColor() == Piece.BLACK)) &&
         board.getPieceAt(new Position(position.getX(), position.getY()-(2*delta))) == null) {
       directions.add(new Direction(0, -1*delta, 2));//move straight two squares
     }else if (board.getPieceAt(new Position(position.getX(), position.getY()-(1*delta))) == null) {

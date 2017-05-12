@@ -21,6 +21,7 @@ import java.io.IOException;
 public class GameHandler extends TextWebSocketHandler {
 
     //TODO REFACTOR ALL THIS SHIT
+    //TODO delete timedout games
     static ArrayList<WebSocketSession> sessions;
     static ArrayList<Game> games;
 
@@ -85,8 +86,19 @@ public class GameHandler extends TextWebSocketHandler {
             game.addWebSocketSessionId(session.getId());
             boolean moved = game.movePiece(message.movement);
             game.getStatus();//update game status
+            boolean isPromotion = game.isPromotion(message.movement);//update is promotion
+            System.out.println("isPromotion:"+isPromotion);
             System.out.println(game.getBoard());
             System.out.println("MOVEMENT DONE: "+message.movement);
+            ReturnMessage returnMessage = new ReturnMessage();
+            returnMessage.type = "updateBoard";
+            returnMessage.game = game;
+            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
+          }else if ("doPromote".equals(message.action)){
+            Game game = this.getGameByUUID(message.gameUUID);
+            game.addWebSocketSessionId(session.getId());
+            game.doPromote(message.promoteTo);
+            game.getStatus();//update game status
             ReturnMessage returnMessage = new ReturnMessage();
             returnMessage.type = "updateBoard";
             returnMessage.game = game;

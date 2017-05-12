@@ -16,6 +16,7 @@ public class Game {
   private String uuid;
   private int status;
   private int turnColor;
+  private boolean isPromotion;
   private Movement lastMovement;
   private Piece lastPieceAtPosition1;
   private Piece lastPieceAtPosition2;
@@ -26,11 +27,13 @@ public class Game {
   public static final int CHECKMATE = 2;
 
 
+  //TODO if game not found redirect to splash
   public Game(String uuid) {
     this.board = new Board();
     this.uuid = uuid;
     this.status = STARTED;
     this.turnColor = Piece.WHITE;
+    this.isPromotion = false;
     this.webSocketSessionIds = new ArrayList<String>();
   }
 
@@ -66,6 +69,45 @@ public class Game {
 
   public String getUUID() {
     return uuid;
+  }
+
+  public void doPromote(String pieceName) {
+    Position pawnPosition = this.getPawnToPromotePosition();
+    Pawn pawn = (Pawn) this.board.getPieceAt(pawnPosition);
+    Piece piece = this.getNewPieceByName(pieceName, pawn.getColor());
+    this.isPromotion = false;
+    this.switchTurnColor();
+    this.board.setPieceAt(pawnPosition, piece);
+  }
+
+  public Piece getNewPieceByName(String name, int color) {
+    if (name.equals("Queen")) {
+      return new Queen(color);
+    } else if (name.equals("Knight")) {
+      return new Knight(color);
+    } else if (name.equals("Rook")) {
+      return new Rook(color);
+    } else if (name.equals("Bishop")) {
+      return new Bishop(color);
+    }
+    return null;
+  }
+
+  public Position getPawnToPromotePosition() {
+    Position positions[] = this.getAllPiecesPositions(null);
+    for (Position position: positions) {
+      Piece piece = this.board.getPieceAt(position);
+      if (piece.getClass().equals(Pawn.class) &&
+          piece.getColor() == Piece.WHITE &&
+          position.getY() == 0) {
+        return position;
+      } else if (piece.getClass().equals(Pawn.class) &&
+          piece.getColor() == Piece.BLACK &&
+          position.getY() == 7) {
+        return position;
+      }
+    }
+    return null;
   }
 
   public int getStatus() throws Exception {
@@ -124,6 +166,30 @@ public class Game {
         return true;
       }
     }
+    return false;
+  }
+
+  //TODO filter possible movements
+
+  public boolean isPromotion(Movement movement) {
+    Piece piece = this.board.getPieceAt(movement.getPosition2());
+    System.out.println("piece.getClass() = " + piece.getClass());
+    System.out.println("piece.getColor() = " + piece.getColor());
+    System.out.println("movement.getPosition2().getY() = " + movement.getPosition2().getY());
+    if (piece.getClass().equals(Pawn.class) &&
+        piece.getColor() == Piece.WHITE &&
+        movement.getPosition2().getY() == 0) {
+      this.switchTurnColor();
+      this.isPromotion = true;
+      return true;
+    } else if (piece.getClass().equals(Pawn.class) &&
+        piece.getColor() == Piece.BLACK &&
+        movement.getPosition2().getY() == 7) {
+      this.switchTurnColor();
+      this.isPromotion = true;
+      return true;
+    }
+    this.isPromotion = false;
     return false;
   }
 
@@ -224,7 +290,7 @@ public class Game {
     for (int x=0; x<=7; x++) {
       for (int y=0; y<=7; y++) {
         Piece piece = this.board.getPieceAt(new Position(x, y));
-        if (piece != null && (piece.getColor() == color || color == null)) {
+        if (piece != null && (color == null || piece.getColor() == color)) {
           positions.add(new Position(x, y));
         }
       }

@@ -16,6 +16,8 @@ public class King implements Piece {
   public King(int color) {
     this.color = color;
     this.htmlCode = "&#9818;";
+    //TODO https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode
+    //TODO change for white and black
     this.moved = false;
   }
 
@@ -46,6 +48,7 @@ public class King implements Piece {
   }
 
   /*
+   * CASTLING
    * it must be that king’s very first move
    * it must be that rook’s very first move
    * there cannot be any pieces between the king and rook to move

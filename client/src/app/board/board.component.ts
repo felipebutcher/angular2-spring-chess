@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { $WebSocket } from '../services/websocket.service';
+import { Overlay, overlayConfigFactory } from 'angular2-modal';
+import { Modal, BSModalContext } from 'angular2-modal/plugins/bootstrap';
+import { PromotionModalContext, PromotionModal } from '../promotion-modal';
+
 
 @Component({
   selector: 'app-board',
@@ -22,8 +26,9 @@ export class BoardComponent implements OnInit {
   game: any;
 
 
-  constructor(private route: ActivatedRoute, private router: Router) {
+  constructor(private route: ActivatedRoute, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
     this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
+    overlay.defaultViewContainer = vcRef;
   }
 
   ngOnInit() {
@@ -70,7 +75,8 @@ export class BoardComponent implements OnInit {
       movement: movement,
       gameUUID: this.gameUUID,
       playerUUID: this.myPlayerUUID,
-      requestUUID: null
+      requestUUID: null,
+      promoteTo: null
     }
     this.ws.send(message);
     this.movement = movement;
@@ -88,7 +94,8 @@ export class BoardComponent implements OnInit {
       movement: this.movement,
       gameUUID: this.gameUUID,
       playerUUID: this.myPlayerUUID,
-      requestUUID: null
+      requestUUID: null,
+      promoteTo: null
     }
     this.ws.send(message);
     this.movement = { position1: {x: null, y: null}, position2: {x: null, y: null} };
@@ -123,7 +130,8 @@ export class BoardComponent implements OnInit {
       movement: null,
       gameUUID: this.gameUUID,
       playerUUID: this.myPlayerUUID,
-      requestUUID: null
+      requestUUID: null,
+      promoteTo: null
     }
     this.ws.send(message);
   }
@@ -135,7 +143,8 @@ export class BoardComponent implements OnInit {
       playerUUID: this.myPlayerUUID,
       movement: null,
       gameUUID: this.gameUUID,
-      requestUUID: this.requestUUID
+      requestUUID: this.requestUUID,
+      promoteTo: null
     }
     this.ws.send(message);
   }
@@ -180,12 +189,31 @@ export class BoardComponent implements OnInit {
     if (game.status == 2 && game.status != this.lastStatus && this.myPlayerNumber != 2) {
       alert("CHECKMATE");
     }
+    if (game.isPromotion && game.turnColor == this.myPlayerNumber) {
+      this.modal.open(PromotionModal,  overlayConfigFactory({ num1: 2, num2: 3 }, BSModalContext))
+                .then(dialog => dialog.result)
+                .then(result => this.doPromote(result))
+                .catch(err => this.doPromote("Queen"));;
+    }
     this.lastStatus = game.status;
     if (this.myPlayerNumber == 1) {
       game.board = this.invertBoard(game.board);
     }
     this.game = game;
     this.playBeep();
+  }
+
+  doPromote(piece: string) {
+    alert("doPromote:"+piece);
+    let message:Message = {
+      action: 'doPromote',
+      movement: null,
+      gameUUID: this.gameUUID,
+      playerUUID: this.myPlayerUUID,
+      requestUUID: null,
+      promoteTo: piece
+    }
+    this.ws.send(message);
   }
 
   playBeep() {
@@ -232,6 +260,7 @@ interface Message {
   gameUUID: string;
   playerUUID: string;
   requestUUID: string;
+  promoteTo: string;
 }
 
 interface Movement {

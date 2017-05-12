@@ -6,4 +6,5 @@ public class Message {
   public String gameUUID;
   public String playerUUID;
   public String requestUUID;
+  public String promoteTo;
 }
