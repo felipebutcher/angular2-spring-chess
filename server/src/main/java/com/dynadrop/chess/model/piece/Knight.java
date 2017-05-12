@@ -14,7 +14,15 @@ public class Knight implements Piece {
 
   public Knight(int color) {
     this.color = color;
-    this.htmlCode = "&#9822;";
+    this.initHtmlCode();
+  }
+
+  private void initHtmlCode() {
+    if (this.color == Piece.WHITE) {
+      this.htmlCode = "&#9816;";
+    }else {
+      this.htmlCode = "&#9822;";
+    }
   }
 
   public int getColor() {

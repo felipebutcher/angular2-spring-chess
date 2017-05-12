@@ -14,7 +14,15 @@ public class Queen implements Piece {
 
   public Queen(int color) {
     this.color = color;
-    this.htmlCode = "&#9819;";
+    this.initHtmlCode();
+  }
+
+  private void initHtmlCode() {
+    if (this.color == Piece.WHITE) {
+      this.htmlCode = "&#9813;";
+    }else {
+      this.htmlCode = "&#9819;";
+    }
   }
 
   public int getColor() {

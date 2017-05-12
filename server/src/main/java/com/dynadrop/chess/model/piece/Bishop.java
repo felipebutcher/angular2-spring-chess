@@ -15,7 +15,15 @@ public class Bishop implements Piece {
 
   public Bishop(int color) {
     this.color = color;
-    this.htmlCode = "&#9821;";
+    this.initHtmlCode();
+  }
+
+  private void initHtmlCode() {
+    if (this.color == Piece.WHITE) {
+      this.htmlCode = "&#9815;";
+    }else {
+      this.htmlCode = "&#9821;";
+    }
   }
 
   public int getColor() {

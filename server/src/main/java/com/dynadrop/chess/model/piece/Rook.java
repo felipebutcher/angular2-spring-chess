@@ -16,7 +16,15 @@ public class Rook implements Piece {
   public Rook(int color) {
     this.color = color;
     this.htmlCode = "&#9820;";
-    this.moved = false;
+    this.initHtmlCode();
+  }
+
+  private void initHtmlCode() {
+    if (this.color == Piece.WHITE) {
+      this.htmlCode = "&#9814;";
+    }else {
+      this.htmlCode = "&#9820;";
+    }
   }
 
   public int getColor() {

@@ -15,10 +15,16 @@ public class King implements Piece {
 
   public King(int color) {
     this.color = color;
-    this.htmlCode = "&#9818;";
-    //TODO https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode
-    //TODO change for white and black
+    this.initHtmlCode();
     this.moved = false;
+  }
+
+  private void initHtmlCode() {
+    if (this.color == Piece.WHITE) {
+      this.htmlCode = "&#9812;";
+    }else {
+      this.htmlCode = "&#9818;";
+    }
   }
 
   public int getColor() {

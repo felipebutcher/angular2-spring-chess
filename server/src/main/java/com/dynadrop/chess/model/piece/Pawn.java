@@ -15,7 +15,15 @@ public class Pawn implements Piece {
 
   public Pawn(int color) {
     this.color = color;
-    this.htmlCode = "&#9823;";
+    this.initHtmlCode();
+  }
+
+  private void initHtmlCode() {
+    if (this.color == Piece.WHITE) {
+      this.htmlCode = "&#9817;";
+    }else {
+      this.htmlCode = "&#9823;";
+    }
   }
 
   public int getColor() {
@@ -36,7 +44,7 @@ public class Pawn implements Piece {
     if (this.color == Piece.BLACK) {
       delta = -1;
     }
-    if (((position.getY() == 6 && this.getColor() == Piece.WHITE) || 
+    if (((position.getY() == 6 && this.getColor() == Piece.WHITE) ||
         (position.getY() == 1 && this.getColor() == Piece.BLACK)) &&
         board.getPieceAt(new Position(position.getX(), position.getY()-(2*delta))) == null) {
       directions.add(new Direction(0, -1*delta, 2));//move straight two squares
