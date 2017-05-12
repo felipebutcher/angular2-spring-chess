@@ -204,6 +204,15 @@ export class BoardComponent implements OnInit {
           .body('You lost.')
           .open();
     }
+    if (game.status == 2 &&
+        game.status != this.lastStatus &&
+        this.myPlayerNumber != 2 &&
+        this.myPlayerNumber != game.turnColor) {
+      this.modal.alert()
+          .title('CHECKMATE')
+          .body('You won.')
+          .open();
+    }
     if (game.isPromotion && game.turnColor == this.myPlayerNumber) {
       this.modal.open(PromotionModal,  overlayConfigFactory({ num1: 2, num2: 3 }, BSModalContext))
                 .then(dialog => dialog.result)
