@@ -223,6 +223,7 @@ export class BoardComponent implements OnInit {
     if (this.myPlayerNumber == 1) {
       game.board = this.invertBoard(game.board);
     }
+    this.resize();
     this.game = game;
     this.playBeep();
   }
