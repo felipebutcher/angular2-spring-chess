@@ -254,7 +254,7 @@ export class BoardComponent implements OnInit {
   }
 
   resize() {
-    this.boardSize = Math.min(window.innerHeight, window.innerWidth) - 20;
+    this.boardSize = Math.min(window.innerHeight-40, window.innerWidth);
     this.squareSize = this.boardSize/8;
     this.fontSize = Math.floor(100*this.squareSize/16/1.8)/100;
   }
