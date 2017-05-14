@@ -85,14 +85,15 @@ public class GameHandler extends TextWebSocketHandler {
           }else if ("move".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             game.addWebSocketSessionId(session.getId());
-            boolean moved = game.movePiece(message.movement);
-            game.getStatus();//update game status
-            boolean isPromotion = game.isPromotion(message.movement);//update is promotion
-            ReturnMessage returnMessage = new ReturnMessage();
-            returnMessage.type = "updateBoard";
-            returnMessage.game = game;
-            System.out.println(game.getBoard());
-            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
+            if (game.movePiece(message.movement)) {
+              game.getStatus();//update game status
+              boolean isPromotion = game.isPromotion(message.movement);//update is promotion
+              ReturnMessage returnMessage = new ReturnMessage();
+              returnMessage.type = "updateBoard";
+              returnMessage.game = game;
+              System.out.println(game.getBoard());
+              this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
+            }
           }else if ("doPromote".equals(message.action)){
             Game game = this.getGameByUUID(message.gameUUID);
             game.addWebSocketSessionId(session.getId());
