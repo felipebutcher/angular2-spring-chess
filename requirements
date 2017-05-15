@@ -5,8 +5,6 @@
 
 //TODO
 -log4j
--delete timed out games
--delete finished games (check used memory)
 -performance testing
 -timer
 

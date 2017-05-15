@@ -8,6 +8,7 @@ import com.dynadrop.chess.websocket.bean.Movement;
 import com.dynadrop.chess.websocket.bean.Position;
 import com.dynadrop.chess.websocket.bean.Direction;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Game {
   private Board board;
@@ -21,13 +22,13 @@ public class Game {
   private Piece lastPieceAtPosition1;
   private Piece lastPieceAtPosition2;
   private ArrayList<String> webSocketSessionIds;
+  private Date dateStarted;
 
   public static final int STARTED = 0;
   public static final int CHECK = 1;
   public static final int CHECKMATE = 2;
 
 
-  //TODO if game not found redirect to splash
   public Game(String uuid) {
     this.board = new Board();
     this.uuid = uuid;
@@ -35,6 +36,13 @@ public class Game {
     this.turnColor = Piece.WHITE;
     this.isPromotion = false;
     this.webSocketSessionIds = new ArrayList<String>();
+    this.dateStarted = new Date();
+  }
+
+  public boolean isOlderThenOneDay() {
+    long MILLIS_PER_DAY = 24 * 60 * 60 * 1000L;
+    Date dateNow = new Date();
+    return Math.abs(this.dateStarted.getTime() - dateNow.getTime()) > MILLIS_PER_DAY;
   }
 
   public Board getBoard() {
@@ -111,7 +119,7 @@ public class Game {
     return null;
   }
 
-  public int getStatus() throws Exception {
+  public int getStatus() {
     return this.status;
   }
 
@@ -367,11 +375,6 @@ public class Game {
       }
     }
     return pieceCanHitKing;
-  }
-
-  @Override
-  protected Object clone() throws CloneNotSupportedException {
-      return super.clone();
   }
 
 }

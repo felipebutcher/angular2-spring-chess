@@ -20,9 +20,9 @@ public class GameController {
       this.games = new ArrayList<Game>();
     }
   }
-  //TODO delete timedout games
 
   public void addGame(String gameUUID, String sessionId) {
+    this.cleanGameList();
     Game game = new Game(gameUUID);
     game.addWebSocketSessionId(sessionId);
     System.out.println(game.getBoard());
@@ -47,6 +47,9 @@ public class GameController {
 
   public Player joinGame(String gameUUID, String playerUUID, String sessionUUID) {
     Game game = this.getGameByUUID(gameUUID);
+    if (game == null) {
+      return null;
+    }
     game.addWebSocketSessionId(sessionUUID);
     Player player = game.getPlayerByUUID(playerUUID);
     if (player != null) {
@@ -96,7 +99,21 @@ public class GameController {
 
   public ArrayList<String> getWebSocketSessionIdsByGame(String gameUUID) {
     Game game = this.getGameByUUID(gameUUID);
+    if (game == null) {
+      return null;
+    }
     return game.getWebSocketSessionIds();
+  }
+
+  private void cleanGameList() {
+    System.out.println("Cleaning game list...");
+    for (int i=this.games.size()-1; i>=0; i--) {
+      Game game = this.games.get(i);
+      if (game.isOlderThenOneDay() || game.getStatus() == Game.CHECKMATE) {
+        System.out.println("Removing game: " + this.games.get(i).getUUID());
+        this.games.remove(i);
+      }
+    }
   }
 
 }
