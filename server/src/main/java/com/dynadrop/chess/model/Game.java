@@ -71,13 +71,14 @@ public class Game {
     return uuid;
   }
 
-  public void doPromote(String pieceName) {
+  public void doPromote(String pieceName) throws Exception {
     Position pawnPosition = this.getPawnToPromotePosition();
     Pawn pawn = (Pawn) this.board.getPieceAt(pawnPosition);
     Piece piece = this.getNewPieceByName(pieceName, pawn.getColor());
     this.isPromotion = false;
     this.switchTurnColor();
     this.board.setPieceAt(pawnPosition, piece);
+    this.updateStatus();
   }
 
   public Piece getNewPieceByName(String name, int color) {
@@ -111,6 +112,10 @@ public class Game {
   }
 
   public int getStatus() throws Exception {
+    return this.status;
+  }
+
+  private void updateStatus() throws Exception {
     if (this.isOnCheckMate(Piece.WHITE) || this.isOnCheckMate(Piece.BLACK)) {
       this.status = CHECKMATE;
     } else if (this.isOnCheck(Piece.WHITE) || this.isOnCheck(Piece.BLACK)) {
@@ -118,7 +123,25 @@ public class Game {
     } else {
       this.status = STARTED;
     }
-    return this.status;
+  }
+
+  private void updateIsPromotion(Movement movement) {
+    Piece piece = this.board.getPieceAt(movement.getPosition2());
+    if (piece == null) {
+      this.isPromotion = false;
+    }
+    if (piece.getClass().equals(Pawn.class) &&
+        piece.getColor() == Piece.WHITE &&
+        movement.getPosition2().getY() == 0) {
+      this.switchTurnColor();
+      this.isPromotion = true;
+    } else if (piece.getClass().equals(Pawn.class) &&
+        piece.getColor() == Piece.BLACK &&
+        movement.getPosition2().getY() == 7) {
+      this.switchTurnColor();
+      this.isPromotion = true;
+    }
+    this.isPromotion = false;
   }
 
   public int getTurnColor() {
@@ -141,7 +164,11 @@ public class Game {
     }
   }
 
-  public boolean movePiece(Movement movement) throws Exception{
+  public boolean movePiece(Movement movement) throws Exception {
+    return this.movePiece(movement, true);
+  }
+
+  public boolean movePiece(Movement movement, boolean updateStatus) throws Exception{
     Piece piece = this.board.getPieceAt(movement.getPosition1());
     if (piece.getColor() != this.turnColor) {
       return false;
@@ -162,6 +189,10 @@ public class Game {
         pieceAfterMove.setMoved(true);
         this.switchTurnColor();
         this.isOnCheck(this.getEnemyColor(piece.getColor()));
+        if (updateStatus) {
+          this.updateStatus();
+          this.updateIsPromotion(movement);
+        }
         return true;
       }
     }
@@ -170,26 +201,8 @@ public class Game {
 
   //TODO filter possible movements
 
-  public boolean isPromotion(Movement movement) {
-    Piece piece = this.board.getPieceAt(movement.getPosition2());
-    if (piece == null) {
-      return false;
-    }
-    if (piece.getClass().equals(Pawn.class) &&
-        piece.getColor() == Piece.WHITE &&
-        movement.getPosition2().getY() == 0) {
-      this.switchTurnColor();
-      this.isPromotion = true;
-      return true;
-    } else if (piece.getClass().equals(Pawn.class) &&
-        piece.getColor() == Piece.BLACK &&
-        movement.getPosition2().getY() == 7) {
-      this.switchTurnColor();
-      this.isPromotion = true;
-      return true;
-    }
-    this.isPromotion = false;
-    return false;
+  private boolean isPromotion(Movement movement) {
+    return this.isPromotion;
   }
 
   private boolean isCastling(Movement movement) {
@@ -319,7 +332,7 @@ public class Game {
       Movement movements[] = this.getAllPossibleMovements(position);
       for (Movement movement: movements) {
         this.saveInfoForUndo(movement);
-        boolean moved = this.movePiece(movement);
+        boolean moved = this.movePiece(movement, false);
         boolean isOnCheck = this.isOnCheck(color);
         if (moved) this.undoMove();
         if (!isOnCheck) return false;

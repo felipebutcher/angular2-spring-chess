@@ -19,19 +19,15 @@ import java.io.IOException;
 
 @Component
 public class GameHandler extends TextWebSocketHandler {
-
-    //TODO REFACTOR ALL THIS SHIT
-    //TODO delete timedout games
     static ArrayList<WebSocketSession> sessions;
-    static ArrayList<Game> games;
+    static GameController gameController;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-      if (games == null) {
-        System.out.println("game list null, initializing");
-        games = new ArrayList<Game>();
-      }
       System.out.println("Connection established");
+      if (this.gameController == null) {
+          this.gameController = new GameController();
+      }
       if (this.sessions == null) {
         this.sessions = new ArrayList<WebSocketSession>();
       }
@@ -45,82 +41,44 @@ public class GameHandler extends TextWebSocketHandler {
           System.out.println(textMessage.getPayload());//.substring(1, textMessage.getPayload().length()-1)
           Gson gson = new Gson();
           Message message = gson.fromJson(textMessage.getPayload(), Message.class);
+          System.out.println("Message received: " + textMessage.getPayload());
+          System.out.println("Number of active games: " + this.gameController.getNumberOfGames());
           if ("CLOSE".equalsIgnoreCase(textMessage.getPayload())) {
             session.close();
           }else if ("newGame".equals(message.action)) {
-            Game game = new Game(message.gameUUID);
-            game.addWebSocketSessionId(session.getId());
-            games.add(game);
-            System.out.println(game.getBoard());
-            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(game)));
-          }else if ("joinGame".equals(message.action)) {
-            Game game = this.getGameByUUID(message.gameUUID);
-            game.addWebSocketSessionId(session.getId());
-            int assignedPlayerNumber = 2;//read-only
-            String assignedPlayerUUID = null;
-            Player player = game.getPlayerByUUID(message.playerUUID);
-            if (player != null) {
-              if (game.getPlayer1().getUUID().equals(message.playerUUID)) {
-                assignedPlayerNumber = 0;
-              }else if (game.getPlayer2().getUUID().equals(message.playerUUID)) {
-                assignedPlayerNumber = 1;
-              }
-            }else {
-              if (game.getPlayer1() == null) {
-                game.setPlayer1(new Player());
-                assignedPlayerUUID = game.getPlayer1().getUUID();
-                assignedPlayerNumber = 0;
-              }else if (game.getPlayer2() == null) {
-                game.setPlayer2(new Player());
-                assignedPlayerUUID = game.getPlayer2().getUUID();
-                assignedPlayerNumber = 1;
-              }
-            }
+            this.gameController.addGame(message.gameUUID, session.getId());
+            Game game = this.gameController.getGameByUUID(message.gameUUID);
+            this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(game)));
+          }else {
             ReturnMessage returnMessage = new ReturnMessage();
-            returnMessage.type = "joinGame";
-            returnMessage.assignedPlayerNumber = assignedPlayerNumber;
-            returnMessage.assignedPlayerUUID = assignedPlayerUUID;
-            returnMessage.requestUUID = message.requestUUID;
-            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
-          }else if ("move".equals(message.action)){
-            Game game = this.getGameByUUID(message.gameUUID);
-            game.addWebSocketSessionId(session.getId());
-            if (game.movePiece(message.movement)) {
-              game.getStatus();//update game status
-              boolean isPromotion = game.isPromotion(message.movement);//update is promotion
-              ReturnMessage returnMessage = new ReturnMessage();
+            if ("joinGame".equals(message.action)) {
+              Player assignedPlayer = this.gameController.joinGame(message.gameUUID, message.playerUUID, session.getId());
+              returnMessage.type = "joinGame";
+              returnMessage.assignedPlayer = assignedPlayer;
+              returnMessage.requestUUID = message.requestUUID;
+              this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
+            }else if ("move".equals(message.action)){
+              if (this.gameController.movePiece(message.gameUUID, message.movement)) {
+                returnMessage.type = "updateBoard";
+                returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
+                this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
+              }
+            }else if ("doPromote".equals(message.action)){
+              this.gameController.doPromote(message.gameUUID, message.promoteTo);
               returnMessage.type = "updateBoard";
-              returnMessage.game = game;
-              System.out.println(game.getBoard());
-              this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
-            }
-          }else if ("doPromote".equals(message.action)){
-            Game game = this.getGameByUUID(message.gameUUID);
-            game.addWebSocketSessionId(session.getId());
-            game.doPromote(message.promoteTo);
-            game.getStatus();//update game status
-            ReturnMessage returnMessage = new ReturnMessage();
-            returnMessage.type = "updateBoard";
-            returnMessage.game = game;
-            System.out.println(game.getBoard());
-            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
-          }else if ("requestUpdate".equals(message.action)) {
-            Game game = this.getGameByUUID(message.gameUUID);
-            game.addWebSocketSessionId(session.getId());
-            ReturnMessage returnMessage = new ReturnMessage();
-            returnMessage.type = "updateBoard";
-            returnMessage.game = game;
-            System.out.println(game.getBoard());
-            this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
-          }else if ("requestPossibleMovements".equals(message.action)) {
-            Game game = this.getGameByUUID(message.gameUUID);
-            game.addWebSocketSessionId(session.getId());
-            Piece piece = game.getBoard().getPieceAt(message.movement.getPosition1());
-            if (piece.getColor() == game.getTurnColor()) {
-              ReturnMessage returnMessage = new ReturnMessage();
-              returnMessage.type = "possibleMovements";
-              returnMessage.possibleMovements = game.getAllPossibleMovements(message.movement.getPosition1());
-              this.sendMessageToAllSessions(game.getWebSocketSessionIds(), new TextMessage(gson.toJson(returnMessage)));
+              returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
+              this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
+            }else if ("requestUpdate".equals(message.action)) {
+              returnMessage.type = "updateBoard";
+              returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
+              this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
+            }else if ("requestPossibleMovements".equals(message.action)) {
+              Movement possibleMovements[] = this.gameController.requestPossibleMovements(message.gameUUID, message.movement.getPosition1());
+              if (possibleMovements != null) {
+                returnMessage.type = "possibleMovements";
+                returnMessage.possibleMovements = possibleMovements;
+                this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
+              }
             }
           }
         }catch (Exception e) {
@@ -129,9 +87,8 @@ public class GameHandler extends TextWebSocketHandler {
         }
     }
 
-    private void sendMessageToAllSessions(ArrayList<String> webSocketSessionIds, TextMessage message) throws IOException {
-      //TODO send only for sessions with same game uuid
-      System.out.println("Number of sessions: " + this.sessions.size());
+    private void sendMessageToAllSessions(String gameUUID, TextMessage message) throws IOException {
+      ArrayList<String> webSocketSessionIds = this.gameController.getWebSocketSessionIdsByGame(gameUUID);
       for (WebSocketSession session: this.sessions) {
         try {
           for (String id: webSocketSessionIds) {
@@ -144,18 +101,6 @@ public class GameHandler extends TextWebSocketHandler {
 
         }
       }
-    }
-
-    private Game getGameByUUID(String uuid) {
-      System.out.println("searching game with uuid: " + uuid);
-      for(Game game: this.games) {
-        System.out.println("game: " + game.getUUID());
-        if (game.getUUID().equals(uuid)) {
-          System.out.println("game found.");
-          return game;
-        }
-      }
-      return null;
     }
 
     private void addSession(WebSocketSession newSession) {

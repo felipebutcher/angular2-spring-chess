@@ -20,7 +20,7 @@ export class BoardComponent implements OnInit {
   private requestUUID: string;
   private sub: any;
   private movement: Movement;
-  private myPlayerNumber: number;
+  private myColor: number;
   private myPlayerUUID: string;
   private lastStatus: number;
   game: any;
@@ -54,7 +54,7 @@ export class BoardComponent implements OnInit {
       return;
     }
     if(this.game.board.rows[y].squares[x].piece &&
-       this.game.board.rows[y].squares[x].piece.color == this.myPlayerNumber) {
+       this.game.board.rows[y].squares[x].piece.color == this.myColor) {
       this.startMovement(x, y);
     }else if (this.movement.position1.x != null) {
       this.completeMovement(x, y);
@@ -62,14 +62,14 @@ export class BoardComponent implements OnInit {
   }
 
   startMovement(x: number, y: number) {
-    if (this.game.turnColor != this.myPlayerNumber) {
+    if (this.game.turnColor != this.myColor) {
       return;
     }
     //this.game.board.rows[y].squares[x].color = "red";
     this.game.board.rows[y].squares[x].border = "2px solid #FFC926";
 
     let movement = { position1: {x: x, y: y}, position2: {x: null, y: null} };
-    if (this.myPlayerNumber == 1) {
+    if (this.myColor == 1) {
       movement = { position1: {x: 7-x, y: 7-y}, position2: {x: null, y: null} }
     }
     let message:Message = {
@@ -87,7 +87,7 @@ export class BoardComponent implements OnInit {
   completeMovement(x: number, y: number) {
     this.movement.position2.x = x;
     this.movement.position2.y = y;
-    if (this.myPlayerNumber == 1) {
+    if (this.myColor == 1) {
       this.movement.position2.x = 7-x;
       this.movement.position2.y = 7-y;
     }
@@ -111,9 +111,8 @@ export class BoardComponent implements OnInit {
           this.processAvailableMovements(availableMovements);
         } else if (JSON.parse(res.data).type == "joinGame") {
           if (this.requestUUID == JSON.parse(res.data).requestUUID) {
-            let assignedPlayerNumber = JSON.parse(res.data).assignedPlayerNumber;
-            let assignedPlayerUUID = JSON.parse(res.data).assignedPlayerUUID;
-            this.joinGame(assignedPlayerNumber, assignedPlayerUUID);
+            let assignedPlayer = JSON.parse(res.data).assignedPlayer;
+            this.joinGame(assignedPlayer);
             this.updateBoard(this.game);
           }
         } else if (JSON.parse(res.data).type == "updateBoard") {
@@ -151,11 +150,13 @@ export class BoardComponent implements OnInit {
     this.ws.send(message);
   }
 
-  joinGame(playerNumber, playerUUID) {
-    this.myPlayerNumber = playerNumber;
-    if (playerUUID != null) {
-      this.myPlayerUUID = playerUUID;
-      localStorage.setItem("myPlayerUUID"+this.gameUUID, playerUUID);
+  joinGame(player) {
+    console.log("joinGame");
+    console.log(player);
+    if (player != null) {
+      this.myPlayerUUID = player.uuid;
+      this.myColor = player.color;
+      localStorage.setItem("myPlayerUUID"+this.gameUUID, player.uuid);
     }
   }
 
@@ -172,11 +173,11 @@ export class BoardComponent implements OnInit {
   }
 
   processAvailableMovements(availableMovements: any) {
-    if (this.game.turnColor != this.myPlayerNumber) {
+    if (this.game.turnColor != this.myColor) {
       return;
     }
     for (let movement of availableMovements) {
-      if (this.myPlayerNumber == 1) {
+      if (this.myColor == 1) {
         movement.position2.x = 7-movement.position2.x;
         movement.position2.y = 7-movement.position2.y;
       }
@@ -188,8 +189,8 @@ export class BoardComponent implements OnInit {
   updateBoard(game: any) {
     if (game.status == 1 &&
         game.status != this.lastStatus &&
-        this.myPlayerNumber != 2 &&
-        this.myPlayerNumber == game.turnColor) {
+        this.myColor != 2 &&
+        this.myColor == game.turnColor) {
       this.modal.alert()
           .title('CHECK')
           .body('You are in CHECK.')
@@ -197,8 +198,8 @@ export class BoardComponent implements OnInit {
     }
     if (game.status == 2 &&
         game.status != this.lastStatus &&
-        this.myPlayerNumber != 2 &&
-        this.myPlayerNumber == game.turnColor) {
+        this.myColor != 2 &&
+        this.myColor == game.turnColor) {
       this.modal.alert()
           .title('CHECKMATE')
           .body('You lost.')
@@ -206,21 +207,21 @@ export class BoardComponent implements OnInit {
     }
     if (game.status == 2 &&
         game.status != this.lastStatus &&
-        this.myPlayerNumber != 2 &&
-        this.myPlayerNumber != game.turnColor) {
+        this.myColor != 2 &&
+        this.myColor != game.turnColor) {
       this.modal.alert()
           .title('CHECKMATE')
           .body('You won.')
           .open();
     }
-    if (game.isPromotion && game.turnColor == this.myPlayerNumber) {
+    if (game.isPromotion && game.turnColor == this.myColor) {
       this.modal.open(PromotionModal,  overlayConfigFactory({ num1: 2, num2: 3 }, BSModalContext))
                 .then(dialog => dialog.result)
                 .then(result => this.doPromote(result))
                 .catch(err => this.doPromote("Queen"));;
     }
     this.lastStatus = game.status;
-    if (this.myPlayerNumber == 1) {
+    if (this.myColor == 1) {
       game.board = this.invertBoard(game.board);
     }
     this.resize();
