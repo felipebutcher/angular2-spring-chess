@@ -16,7 +16,7 @@ springBoot {
 }
 
 jar {
-    baseName = 'gs-messaging-stomp-websocket'
+    baseName = 'butcher-chess'
     version = '0.1.0'
 }
 sourceCompatibility = 1.7
