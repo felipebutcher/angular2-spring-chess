@@ -92,7 +92,14 @@ public class GameController {
     Game game = this.getGameByUUID(gameUUID);
     Piece piece = game.getBoard().getPieceAt(position);
     if (piece.getColor() == game.getTurnColor()) {
-      return game.getAllPossibleMovements(position);
+      Movement allMovements[] = game.getAllPossibleMovements(position);
+      ArrayList<Movement> allPossibleMovements = new ArrayList<Movement>();
+      for (Movement movement: allMovements) {
+        if (!game.isOnCheckAfterMovement(movement)) {
+          allPossibleMovements.add(movement);
+        }
+      }
+      return (Movement[])allPossibleMovements.toArray(new Movement[allPossibleMovements.size()]);
     }
     return null;
   }
