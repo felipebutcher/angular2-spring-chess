@@ -185,7 +185,7 @@ public class Game {
     for(Movement possibleMovement: possibleMovements) {
       int enemyColor = this.getEnemyColor(piece.getColor());
       if (movement.equals(possibleMovement) &&
-          !this.isOnCheckAfterMovement(piece.getColor(), movement) &&
+          !this.isOnCheckAfterMovement(movement) &&
           this.status != CHECKMATE) {
         if (this.isCastling(movement)) {
           this.doCastling(movement);
@@ -323,7 +323,8 @@ public class Game {
     else return Piece.WHITE;
   }
 
-  private boolean isOnCheckAfterMovement(int color, Movement movement) throws Exception {
+  public boolean isOnCheckAfterMovement(Movement movement) {
+    int color = this.board.getPieceAt(movement.getPosition1()).getColor();
     Piece pieceAtPosition1 = this.board.getPieceAt(movement.getPosition1());
     Piece pieceAtPosition2 = this.board.getPieceAt(movement.getPosition2());
     this.board.setPieceAt(movement.getPosition1(), null);
