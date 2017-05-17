@@ -14,7 +14,6 @@ public class Board {
   }
 
   private void initBoard() {
-    System.out.println("Board.initBoard()");
     this.rows = new Row[8];
     this.rows[0] = new Row(new Piece[]{
       new Rook(Piece.BLACK),
@@ -90,13 +89,13 @@ public class Board {
 
   @Override
   public String toString() {
-    String boardString = "";
+    String boardString = "\n";
     for (int x=0; x<=7; x++) {
       String line = "";
       for (int y=0; y<=7; y++) {
         Piece piece = this.getPieceAt(new Position(y, x));
         if (piece == null) {
-          line += " 0";
+          line += " _";
         }else {
           String className = piece.getClass().getName().replace("com.dynadrop.chess.model.piece.", "");
           String classFirstChar = className.substring(0, 1);

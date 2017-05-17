@@ -3,9 +3,9 @@ package com.dynadrop.chess;
 import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Piece;
 import com.dynadrop.chess.model.Player;
-
 import com.dynadrop.chess.websocket.bean.Movement;
 import com.dynadrop.chess.websocket.bean.Position;
+import org.apache.log4j.Logger;
 
 
 import java.util.ArrayList;
@@ -13,10 +13,11 @@ import java.util.ArrayList;
 public class GameController {
   static ArrayList<Game> games;
   final static int maxGames = 100;
+  private static final Logger logger = Logger.getLogger(GameHandler.class);
 
   public GameController() {
     if (this.games == null) {
-      System.out.println("game list null, initializing");
+      logger.info("game list null, initializing");
       this.games = new ArrayList<Game>();
     }
   }
@@ -25,19 +26,16 @@ public class GameController {
     this.cleanGameList();
     Game game = new Game(gameUUID);
     game.addWebSocketSessionId(sessionId);
-    System.out.println(game.getBoard());
+    logger.info(game.getBoard());
     this.games.add(game);
   }
 
   public Game getGameByUUID(String uuid) {
-    System.out.println("searching game with uuid: " + uuid);
     for(Game game: this.games) {
       if (game.getUUID().equals(uuid)) {
-        System.out.println("game found.");
         return game;
       }
     }
-    System.out.println("game not found.");
     return null;
   }
 
@@ -78,14 +76,14 @@ public class GameController {
   public boolean movePiece(String gameUUID, Movement movement) throws Exception {
     Game game = this.getGameByUUID(gameUUID);
     boolean moved = game.movePiece(movement);
-    System.out.println(game.getBoard());
+    logger.info(game.getBoard());
     return moved;
   }
 
   public void doPromote(String gameUUID, String promoteTo) throws Exception {
     Game game = this.getGameByUUID(gameUUID);
     game.doPromote(promoteTo);
-    System.out.println(game.getBoard());
+    logger.info(game.getBoard());
   }
 
   public Movement[] requestPossibleMovements(String gameUUID, Position position) {
@@ -113,11 +111,11 @@ public class GameController {
   }
 
   private void cleanGameList() {
-    System.out.println("Cleaning game list...");
+    logger.info("Cleaning game list...");
     for (int i=this.games.size()-1; i>=0; i--) {
       Game game = this.games.get(i);
       if (game.isOlderThenOneDay() || game.getStatus() == Game.CHECKMATE) {
-        System.out.println("Removing game: " + this.games.get(i).getUUID());
+        logger.info("Removing game: " + this.games.get(i).getUUID());
         this.games.remove(i);
       }
     }

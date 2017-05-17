@@ -223,7 +223,6 @@ public class Game {
   }
 
   private void doCastling(Movement movement) {
-    System.out.println("castling done");
     int y = movement.getPosition2().getY();
     if (movement.getPosition1().getX() == movement.getPosition2().getX() + 2) {
       //castling left

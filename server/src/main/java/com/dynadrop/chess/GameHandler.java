@@ -15,16 +15,17 @@ import com.dynadrop.chess.websocket.bean.ReturnMessage;
 import com.dynadrop.chess.websocket.bean.Movement;
 import java.util.ArrayList;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
 
 @Component
 public class GameHandler extends TextWebSocketHandler {
     static ArrayList<WebSocketSession> sessions;
     static GameController gameController;
+    private static final Logger logger = Logger.getLogger(GameHandler.class);
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-      System.out.println("Connection established");
       if (this.gameController == null) {
           this.gameController = new GameController();
       }
@@ -38,11 +39,10 @@ public class GameHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage)
             throws Exception {
         try {
-          System.out.println(textMessage.getPayload());//.substring(1, textMessage.getPayload().length()-1)
           Gson gson = new Gson();
           Message message = gson.fromJson(textMessage.getPayload(), Message.class);
-          System.out.println("Message received: " + textMessage.getPayload());
-          System.out.println("Number of active games: " + this.gameController.getNumberOfGames());
+          logger.info("Message received: " + textMessage.getPayload());
+          logger.info("Number of active games: " + this.gameController.getNumberOfGames());
           if ("CLOSE".equalsIgnoreCase(textMessage.getPayload())) {
             session.close();
           }else if ("newGame".equals(message.action)) {
@@ -82,7 +82,7 @@ public class GameHandler extends TextWebSocketHandler {
             }
           }
         }catch (Exception e) {
-          System.out.println("EXCEPTION OCURRED");
+          logger.error("EXCEPTION OCURRED");
           e.printStackTrace();
         }
     }
@@ -94,7 +94,6 @@ public class GameHandler extends TextWebSocketHandler {
           for (String id: webSocketSessionIds) {
             if (session.getId().equals(id)) {
               session.sendMessage(message);
-              System.out.println("Sending message to client ");
             }
           }
         } catch (Exception e) {
