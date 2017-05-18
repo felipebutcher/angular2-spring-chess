@@ -74,6 +74,5 @@ export class PromotionModal implements CloseGuard, ModalComponent<PromotionModal
 
   beforeClose(): boolean {
     return false;
-    //return this.wrongAnswer;
   }
 }

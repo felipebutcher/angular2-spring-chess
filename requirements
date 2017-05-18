@@ -4,13 +4,7 @@
 
 
 //TODO
--log4j
+DONE-log4j
+-en passant
 -performance testing
 -timer
-
-//INSTALLATION:
--install angular cli https://angular.io/docs/ts/latest/cli-quickstart.html
-
-cd client
-npm install
-ng serve

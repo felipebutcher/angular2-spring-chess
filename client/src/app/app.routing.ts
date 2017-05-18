@@ -12,11 +12,7 @@ const appRoutes : Routes = [
   {
     path: 'game/:gameUUID',
     component: BoardComponent
-  }/*,
-  {
-    path: 'reservation/:standId',
-    component: ReservationComponent
-  }*/
+  }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes, { useHash: true });

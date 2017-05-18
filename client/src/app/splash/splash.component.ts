@@ -24,13 +24,11 @@ export class SplashComponent implements OnInit {
   }
 
   sendNewMatchRequest() {
-    let movement:Movement = { x1: 0, y1: 0, x2: 0, y2: 0 }
     let uuid = UUID.UUID();
     localStorage.setItem('gameUUID', uuid);
     localStorage.setItem('myPlayerNumber', '0');
     let message:Message = {
       action: 'newGame',
-      movement: movement,
       gameUUID: uuid
     }
     this.ws.send(message);
@@ -54,13 +52,5 @@ export class SplashComponent implements OnInit {
 
 interface Message {
   action: string;
-  movement: Movement;
   gameUUID: string;
-}
-
-interface Movement {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
 }
