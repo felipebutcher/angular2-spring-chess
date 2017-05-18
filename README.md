@@ -14,11 +14,11 @@ ng serve
 
 ## Dev - Server Install
 Server is a Spring Boot app with a Web Socket handler.
-Follow steps to run locally
+Follow steps to run locally.
 ```
 cd server/
 ./gradlew build
-./gradlew test -i #(run junit)
+./gradlew test -i #to run junit
 ./gradlew bootRun
 ```
 
