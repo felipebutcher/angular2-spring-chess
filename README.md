@@ -1,4 +1,4 @@
-## Synopsis
+## Angular2 Spring Boot Chess
 
 This is a Chess game using AngularJS (v4) as client and Spring Boot as server running a Web Socket handler.
 
@@ -22,18 +22,19 @@ cd server/
 ./gradlew bootRun
 ```
 
-## Prod Deploy - Client
+## Prod - Client Deploy
 ```
 cd client/
 ng build --prod
 cp dist/* [the chess folder in your Apache's www html folder]
 ```
 
-## Prod Deploy - Server
-Edit start.sh to change java memory usage
+## Prod - Server Deploy
+Edit start.sh to change java memory usage.
+mvn package will not build if tests fail.
 ```
 cd server/
-mvn package #will not build if tests failed
+mvn package
 chmod +x start.sh
 start.sh
 ```
