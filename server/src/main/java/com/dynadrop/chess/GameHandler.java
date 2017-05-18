@@ -82,7 +82,7 @@ public class GameHandler extends TextWebSocketHandler {
         }
       }catch (Exception e) {
         logger.error("EXCEPTION OCURRED");
-        e.printStackTrace();
+        logger.error( "failed! ", e );
       }
     }
 
