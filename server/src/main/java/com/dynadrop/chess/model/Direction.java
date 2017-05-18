@@ -1,4 +1,4 @@
-package com.dynadrop.chess.websocket.bean;
+package com.dynadrop.chess.model;
 
 
 public class Direction {

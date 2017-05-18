@@ -26,8 +26,7 @@ export class $WebSocket  {
   private dataStream: Subject<any>;
   private internalConnectionState: number;
   private config: WebSocketConfig;
-  private url: string = 'ws://cam.dynadrop.com:8088/game';
-  //private url: string = "ws://192.168.1.114:8088/game";
+  private url: string = "ws://localhost:8088/game";
 
   constructor(private protocols?:Array<string>) {
     var match = new RegExp('wss?:\/\/').test(this.url);

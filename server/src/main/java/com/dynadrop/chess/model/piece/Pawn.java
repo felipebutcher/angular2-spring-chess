@@ -2,9 +2,9 @@ package com.dynadrop.chess.model.piece;
 
 import com.dynadrop.chess.model.Piece;
 import com.dynadrop.chess.model.Board;
-import com.dynadrop.chess.websocket.bean.Movement;
-import com.dynadrop.chess.websocket.bean.Direction;
-import com.dynadrop.chess.websocket.bean.Position;
+import com.dynadrop.chess.model.Movement;
+import com.dynadrop.chess.model.Direction;
+import com.dynadrop.chess.model.Position;
 import java.util.ArrayList;
 
 
@@ -54,12 +54,12 @@ public class Pawn implements Piece {
     Position positionTo = new Position(position.getX()-1, (position.getY()-(1*delta)));
     if (positionTo.isWithinBoard() && board.getPieceAt(positionTo) != null
         && board.getPieceAt(positionTo).getColor() != this.color) {
-      directions.add(new Direction(-1, -1*delta, 1));//move diagonal left when 'killing' enemy
+      directions.add(new Direction(-1, -1*delta, 1));//move diagonal left when enemy is on the way
     }
     positionTo = new Position(position.getX()+1, (position.getY()-(1*delta)));
     if (positionTo.isWithinBoard() && board.getPieceAt(positionTo) != null
         && board.getPieceAt(positionTo).getColor() != this.color) {
-      directions.add(new Direction(1, -1*delta, 1));//move diagonal right when 'killing' enemy
+      directions.add(new Direction(1, -1*delta, 1));//move diagonal right when enemy is on the way
     }
     return directions.toArray(new Direction[0]);
   }

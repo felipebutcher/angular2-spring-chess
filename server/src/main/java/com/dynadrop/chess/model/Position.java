@@ -1,4 +1,4 @@
-package com.dynadrop.chess.websocket.bean;
+package com.dynadrop.chess.model;
 
 public class Position {
   private int x;
@@ -25,6 +25,5 @@ public class Position {
   public String toString() {
     return "("+this.x+","+this.y+")";
   }
-
 
 }

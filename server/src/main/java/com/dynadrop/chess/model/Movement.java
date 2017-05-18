@@ -1,16 +1,9 @@
-package com.dynadrop.chess.websocket.bean;
+package com.dynadrop.chess.model;
 
 
 public class Movement {
   private Position position1;
   private Position position2;
-
-  public final int NO_MOVE = 0;
-  public final int HORIZONTAL = 0;
-  public final int VERTICAL = 0;
-  public final int DIAGONAL = 0;
-  public final int KNIGHT = 0;
-  public final int INVALID = 0;
 
   public Movement(Position position1, Position position2) {
     this.position1 = position1;

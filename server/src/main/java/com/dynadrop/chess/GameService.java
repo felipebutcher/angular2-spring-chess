@@ -12,12 +12,4 @@ public class GameService {
     @Autowired
     GameHandler counterHandler;
 
-    /*@Scheduled(fixedDelay = 1000)
-    public void sendCounterUpdate() {
-        counterHandler.counterIncrementedCallback(counter.incrementAndGet());
-    }*/
-
-    Integer getValue() {
-        return 123;
-    }
 }

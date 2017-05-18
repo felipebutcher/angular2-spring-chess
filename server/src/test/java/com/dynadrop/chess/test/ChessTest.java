@@ -7,8 +7,8 @@ import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Player;
 import com.dynadrop.chess.model.Piece;
 import com.dynadrop.chess.model.piece.*;
-import com.dynadrop.chess.websocket.bean.Movement;
-import com.dynadrop.chess.websocket.bean.Position;
+import com.dynadrop.chess.model.Movement;
+import com.dynadrop.chess.model.Position;
 
 public class ChessTest {
   Game game;

@@ -1,12 +1,11 @@
 package com.dynadrop.chess.model;
 
-import com.dynadrop.chess.model.Player;
 import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
 import com.dynadrop.chess.model.piece.*;
-import com.dynadrop.chess.websocket.bean.Movement;
-import com.dynadrop.chess.websocket.bean.Position;
-import com.dynadrop.chess.websocket.bean.Direction;
+import com.dynadrop.chess.model.Movement;
+import com.dynadrop.chess.model.Position;
+import com.dynadrop.chess.model.Direction;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -206,8 +205,6 @@ public class Game {
     }
     return false;
   }
-
-  //TODO filter possible movements
 
   private boolean isPromotion(Movement movement) {
     return this.isPromotion;

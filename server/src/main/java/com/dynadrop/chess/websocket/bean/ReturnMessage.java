@@ -1,6 +1,6 @@
 package com.dynadrop.chess.websocket.bean;
 
-import com.dynadrop.chess.websocket.bean.Movement;
+import com.dynadrop.chess.model.Movement;
 import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Player;
 

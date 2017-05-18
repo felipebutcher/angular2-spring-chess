@@ -3,16 +3,14 @@ package com.dynadrop.chess;
 import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Piece;
 import com.dynadrop.chess.model.Player;
-import com.dynadrop.chess.websocket.bean.Movement;
-import com.dynadrop.chess.websocket.bean.Position;
+import com.dynadrop.chess.model.Movement;
+import com.dynadrop.chess.model.Position;
 import org.apache.log4j.Logger;
-
-
 import java.util.ArrayList;
+
 
 public class GameController {
   static ArrayList<Game> games;
-  final static int maxGames = 100;
   private static final Logger logger = Logger.getLogger(GameHandler.class);
 
   public GameController() {

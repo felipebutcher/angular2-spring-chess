@@ -3,8 +3,8 @@ package com.dynadrop.chess.model;
 import com.dynadrop.chess.model.Square;
 import com.dynadrop.chess.model.piece.*;
 import com.dynadrop.chess.model.Row;
-import com.dynadrop.chess.websocket.bean.Movement;
-import com.dynadrop.chess.websocket.bean.Position;
+import com.dynadrop.chess.model.Movement;
+import com.dynadrop.chess.model.Position;
 
 public class Board {
   private Row[] rows;
