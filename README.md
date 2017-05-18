@@ -32,6 +32,8 @@ cp dist/* [the chess folder in your Apache's www html folder]
 ## Prod - Server Deploy
 Edit start.sh to change java memory usage.
 mvn package will not build if tests fail.
+#Change production to true in client/src/environments/environment.ts.
+#Change websocket url in src/app/services/websocket.service.ts
 ```
 cd server/
 mvn package
