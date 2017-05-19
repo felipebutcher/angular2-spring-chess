@@ -113,6 +113,23 @@ public class ChessTest {
     assertEquals(Rook.class, this.getPieceAt(new Position(5,7)).getClass());
   }
 
+  @Test
+  public void testPromotion() throws Exception {
+    this.testMovePiece(new Movement(new Position(6,6), new Position(6,4)), true);
+    this.testMovePiece(new Movement(new Position(5,1), new Position(5,3)), true);
+    this.testMovePiece(new Movement(new Position(6,4), new Position(5,3)), true);
+    this.testMovePiece(new Movement(new Position(6,1), new Position(6,2)), true);
+    this.testMovePiece(new Movement(new Position(5,3), new Position(6,2)), true);
+    this.testMovePiece(new Movement(new Position(6,0), new Position(5,2)), true);
+    this.testMovePiece(new Movement(new Position(6,2), new Position(6,1)), true);
+    this.testMovePiece(new Movement(new Position(0,1), new Position(0,2)), true);
+    Position promotePosition = new Position(6,0);
+    this.testMovePiece(new Movement(new Position(6,1), promotePosition), true);
+    assertEquals(true, this.game.isPromotion());
+    this.game.doPromote("Queen");
+    assertEquals(Queen.class, this.getPieceAt(promotePosition).getClass());
+  }
+
   private void testMovePiece(Movement movement, boolean expected) throws Exception {
     assertEquals(expected, this.game.movePiece(movement));
   }

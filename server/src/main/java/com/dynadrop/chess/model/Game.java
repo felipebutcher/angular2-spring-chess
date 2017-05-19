@@ -136,17 +136,20 @@ public class Game {
     Piece piece = this.board.getPieceAt(movement.getPosition2());
     if (piece == null) {
       this.isPromotion = false;
+      return;
     }
     if (piece.getClass().equals(Pawn.class) &&
         piece.getColor() == Piece.WHITE &&
         movement.getPosition2().getY() == 0) {
       this.switchTurnColor();
       this.isPromotion = true;
+      return;
     } else if (piece.getClass().equals(Pawn.class) &&
         piece.getColor() == Piece.BLACK &&
         movement.getPosition2().getY() == 7) {
       this.switchTurnColor();
       this.isPromotion = true;
+      return;
     }
     this.isPromotion = false;
   }
@@ -206,7 +209,7 @@ public class Game {
     return false;
   }
 
-  private boolean isPromotion(Movement movement) {
+  public boolean isPromotion() {
     return this.isPromotion;
   }
 
