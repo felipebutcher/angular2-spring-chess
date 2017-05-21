@@ -298,7 +298,9 @@ public class Game implements Serializable {
     if (pieceAtDestination == null ||
         piece.getColor() != pieceAtDestination.getColor() ||
         (piece.getClass().equals(King.class) &&
-         pieceAtDestination.getClass().equals(Rook.class))) {
+         pieceAtDestination.getClass().equals(Rook.class) &&
+         !piece.hasMoved() &&
+         !pieceAtDestination.hasMoved())) {
       return true;
     } else {
       return false;
