@@ -65,7 +65,7 @@ export class BoardComponent implements OnInit {
     if (this.game.turnColor != this.myColor) {
       return;
     }
-    this.game.board.rows[y].squares[x].border = "2px solid #FFC926";
+    this.game.board.rows[y].squares[x].border = "2px solid white";
     let movement = { position1: {x: x, y: y}, position2: {x: null, y: null} };
     if (this.myColor == 1) {
       movement = { position1: {x: 7-x, y: 7-y}, position2: {x: null, y: null} }
@@ -177,7 +177,7 @@ export class BoardComponent implements OnInit {
         movement.position2.x = 7-movement.position2.x;
         movement.position2.y = 7-movement.position2.y;
       }
-      this.game.board.rows[movement.position2.y].squares[movement.position2.x].border = "2px solid #FFC926";
+      this.game.board.rows[movement.position2.y].squares[movement.position2.x].border = "2px solid white";
     }
   }
 
