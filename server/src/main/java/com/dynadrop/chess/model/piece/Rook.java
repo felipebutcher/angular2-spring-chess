@@ -6,9 +6,10 @@ import com.dynadrop.chess.model.Position;
 import com.dynadrop.chess.model.Movement;
 import com.dynadrop.chess.model.Direction;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 
-public class Rook implements Piece {
+public class Rook implements Piece, Serializable {
   private String htmlCode;
   private int color;
   private boolean moved;

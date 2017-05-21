@@ -1,9 +1,10 @@
 package com.dynadrop.chess.model;
 
 import com.dynadrop.chess.model.Position;
+import java.io.Serializable;
 
 
-public class Row {
+public class Row implements Serializable {
   Square[] squares;
 
   public Row(Piece[] pieces, int y) {

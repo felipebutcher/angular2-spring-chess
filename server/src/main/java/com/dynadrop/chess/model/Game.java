@@ -8,8 +8,9 @@ import com.dynadrop.chess.model.Position;
 import com.dynadrop.chess.model.Direction;
 import java.util.ArrayList;
 import java.util.Date;
+import java.io.Serializable;
 
-public class Game {
+public class Game implements Serializable {
   private Board board;
   private Player player1;
   private Player player2;
@@ -20,7 +21,7 @@ public class Game {
   private Movement lastMovement;
   private Piece lastPieceAtPosition1;
   private Piece lastPieceAtPosition2;
-  private ArrayList<String> webSocketSessionIds;
+  private static ArrayList<String> webSocketSessionIds;
   private Date dateStarted;
 
   public static final int STARTED = 0;
@@ -163,14 +164,19 @@ public class Game {
   }
 
   public void addWebSocketSessionId(String webSocketSessionId) {
+    System.out.println("adding websocket session " + webSocketSessionId + " to game " + this.uuid);
     boolean exists = false;
     for (String id: this.webSocketSessionIds) {
       if (id.equals(webSocketSessionId)) {
         exists = true;
       }
     }
+    System.out.println("exists:"+exists);
     if (!exists) {
       this.webSocketSessionIds.add(webSocketSessionId);
+    }
+    for (String id: this.webSocketSessionIds) {
+      System.out.println("existing session id: "+id);
     }
   }
 

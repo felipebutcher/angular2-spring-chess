@@ -2,8 +2,9 @@ package com.dynadrop.chess.model;
 
 import com.dynadrop.chess.model.Position;
 import com.dynadrop.chess.model.Piece;
+import java.io.Serializable;
 
-public class Square {
+public class Square implements Serializable {
   Piece piece;
   Position position;
 

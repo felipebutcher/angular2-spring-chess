@@ -149,8 +149,6 @@ export class BoardComponent implements OnInit {
   }
 
   joinGame(player) {
-    console.log("joinGame");
-    console.log(player);
     if (player != null) {
       this.myPlayerUUID = player.uuid;
       this.myColor = player.color;

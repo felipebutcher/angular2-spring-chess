@@ -5,9 +5,9 @@ import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Position;
 import com.dynadrop.chess.model.Direction;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-
-public class Knight implements Piece {
+public class Knight implements Piece, Serializable {
   private String htmlCode;
   private int color;
   private boolean moved;

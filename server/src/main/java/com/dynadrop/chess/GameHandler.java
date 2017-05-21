@@ -41,7 +41,6 @@ public class GameHandler extends TextWebSocketHandler {
         Gson gson = new Gson();
         Message message = gson.fromJson(textMessage.getPayload(), Message.class);
         logger.info("Message received: " + textMessage.getPayload());
-        logger.info("Number of active games: " + this.gameController.getNumberOfGames());
         if ("CLOSE".equalsIgnoreCase(textMessage.getPayload())) {
           session.close();
         }else if ("newGame".equals(message.action)) {
@@ -92,11 +91,12 @@ public class GameHandler extends TextWebSocketHandler {
         try {
           for (String id: webSocketSessionIds) {
             if (session.getId().equals(id)) {
+              System.out.println("sending message to: "+id);
               session.sendMessage(message);
             }
           }
         } catch (Exception e) {
-
+          logger.error("Error sending message", e);
         }
       }
     }

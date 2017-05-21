@@ -5,48 +5,35 @@ import com.dynadrop.chess.model.Piece;
 import com.dynadrop.chess.model.Player;
 import com.dynadrop.chess.model.Movement;
 import com.dynadrop.chess.model.Position;
+import com.dynadrop.chess.Storage;
 import org.apache.log4j.Logger;
 import java.util.ArrayList;
 
 
+
 public class GameController {
-  static ArrayList<Game> games;
   private static final Logger logger = Logger.getLogger(GameHandler.class);
 
   public GameController() {
-    if (this.games == null) {
-      logger.info("game list null, initializing");
-      this.games = new ArrayList<Game>();
-    }
   }
 
   public void addGame(String gameUUID, String sessionId) {
-    this.cleanGameList();
     Game game = new Game(gameUUID);
     game.addWebSocketSessionId(sessionId);
     logger.info(game.getBoard());
-    this.games.add(game);
+    Storage.put(game, gameUUID);
   }
 
   public Game getGameByUUID(String uuid) {
-    for(Game game: this.games) {
-      if (game.getUUID().equals(uuid)) {
-        return game;
-      }
-    }
-    return null;
+    return (Game) Storage.get(uuid);
   }
 
-  public int getNumberOfGames() {
-    return this.games.size();
-  }
-
-  public Player joinGame(String gameUUID, String playerUUID, String sessionUUID) {
+  public Player joinGame(String gameUUID, String playerUUID, String sessionID) {
     Game game = this.getGameByUUID(gameUUID);
+    game.addWebSocketSessionId(sessionID);
     if (game == null) {
       return null;
     }
-    game.addWebSocketSessionId(sessionUUID);
     Player player = game.getPlayerByUUID(playerUUID);
     if (player != null) {
       if (game.getPlayer1().getUUID().equals(playerUUID)) {
@@ -68,6 +55,7 @@ public class GameController {
         player.setColor(2);
       }
     }
+    Storage.put(game, gameUUID);
     return player;
   }
 
@@ -75,6 +63,7 @@ public class GameController {
     Game game = this.getGameByUUID(gameUUID);
     boolean moved = game.movePiece(movement);
     logger.info(game.getBoard());
+    Storage.put(game, gameUUID);
     return moved;
   }
 
@@ -82,6 +71,7 @@ public class GameController {
     Game game = this.getGameByUUID(gameUUID);
     game.doPromote(promoteTo);
     logger.info(game.getBoard());
+    Storage.put(game, gameUUID);
   }
 
   public Movement[] requestPossibleMovements(String gameUUID, Position position) {
@@ -106,17 +96,6 @@ public class GameController {
       return null;
     }
     return game.getWebSocketSessionIds();
-  }
-
-  private void cleanGameList() {
-    logger.info("Cleaning game list...");
-    for (int i=this.games.size()-1; i>=0; i--) {
-      Game game = this.games.get(i);
-      if (game.isOlderThenOneDay() || game.getStatus() == Game.CHECKMATE) {
-        logger.info("Removing game: " + this.games.get(i).getUUID());
-        this.games.remove(i);
-      }
-    }
   }
 
 }

@@ -6,9 +6,10 @@ import com.dynadrop.chess.model.Movement;
 import com.dynadrop.chess.model.Direction;
 import com.dynadrop.chess.model.Position;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 
-public class Pawn implements Piece {
+public class Pawn implements Piece, Serializable {
   private String htmlCode;
   private int color;
   private boolean moved;

@@ -1,8 +1,9 @@
 package com.dynadrop.chess.model;
 
 import java.util.UUID;
+import java.io.Serializable;
 
-public class Player {
+public class Player implements Serializable {
   private String uuid;
   private int color;
 

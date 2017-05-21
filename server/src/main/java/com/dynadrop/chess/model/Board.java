@@ -5,8 +5,9 @@ import com.dynadrop.chess.model.piece.*;
 import com.dynadrop.chess.model.Row;
 import com.dynadrop.chess.model.Movement;
 import com.dynadrop.chess.model.Position;
+import java.io.Serializable;
 
-public class Board {
+public class Board implements Serializable {
   private Row[] rows;
 
   public Board() {

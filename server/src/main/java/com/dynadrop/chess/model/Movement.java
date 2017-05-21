@@ -1,7 +1,8 @@
 package com.dynadrop.chess.model;
 
+import java.io.Serializable;
 
-public class Movement {
+public class Movement implements Serializable {
   private Position position1;
   private Position position2;
 
