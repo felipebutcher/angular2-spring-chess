@@ -24,13 +24,10 @@ public class Storage {
         ObjectInputStream ois = new ObjectInputStream(bis);
         obj = ois.readObject();
         ois.close();
-        System.out.println("ENTROU AQUI PORRA");
         return obj;
       } catch (IOException e) {
-        System.out.println("LOCURA1");
         logger.info("someone tried to find not existing game "+fileName);
       } catch (ClassNotFoundException e) {
-        System.out.println("LOCURA");
         logger.error("exception", e);
       }
       return obj;

@@ -164,19 +164,14 @@ public class Game implements Serializable {
   }
 
   public void addWebSocketSessionId(String webSocketSessionId) {
-    System.out.println("adding websocket session " + webSocketSessionId + " to game " + this.uuid);
     boolean exists = false;
     for (String id: this.webSocketSessionIds) {
       if (id.equals(webSocketSessionId)) {
         exists = true;
       }
     }
-    System.out.println("exists:"+exists);
     if (!exists) {
       this.webSocketSessionIds.add(webSocketSessionId);
-    }
-    for (String id: this.webSocketSessionIds) {
-      System.out.println("existing session id: "+id);
     }
   }
 

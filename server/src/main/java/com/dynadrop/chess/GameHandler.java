@@ -88,15 +88,15 @@ public class GameHandler extends TextWebSocketHandler {
     private void sendMessageToAllSessions(String gameUUID, TextMessage message) throws IOException {
       ArrayList<String> webSocketSessionIds = this.gameController.getWebSocketSessionIdsByGame(gameUUID);
       for (WebSocketSession session: this.sessions) {
-        try {
-          for (String id: webSocketSessionIds) {
+        for (String id: webSocketSessionIds) {
+          try {
             if (session.getId().equals(id)) {
               System.out.println("sending message to: "+id);
               session.sendMessage(message);
             }
+          } catch (Exception e) {
+            //logger.error("Error sending message", e);
           }
-        } catch (Exception e) {
-          logger.error("Error sending message", e);
         }
       }
     }
