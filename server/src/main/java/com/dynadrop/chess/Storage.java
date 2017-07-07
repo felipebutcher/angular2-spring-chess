@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 public class Storage {
     private static final String relativeFolder = "games/";
-    private static final Logger logger = Logger.getLogger(GameHandler.class);
+    private static final Logger logger = Logger.getLogger(Storage.class);
 
     public static Object get(String fileName) {
       System.out.println("Storage.get("+relativeFolder + fileName+")");

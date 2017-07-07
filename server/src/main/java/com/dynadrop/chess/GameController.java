@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 
 public class GameController {
-  private static final Logger logger = Logger.getLogger(GameHandler.class);
+  private static final Logger logger = Logger.getLogger(GameController.class);
 
   public GameController() {
   }

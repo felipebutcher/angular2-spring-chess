@@ -88,6 +88,7 @@ public class Board implements Serializable {
     this.rows[position.getY()].getSquares()[position.getX()].setPiece(piece);
   }
 
+  //print a readable table to console for debugging purposes 
   @Override
   public String toString() {
     String boardString = "\n";
