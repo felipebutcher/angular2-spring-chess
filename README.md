@@ -2,7 +2,7 @@
 
 This is a Chess game using AngularJS (v4) as client and Spring Boot as server running a Web Socket handler.
 
-The app is deployed here: http://cam.dynadrop.com/chess
+The app is deployed here: http://104.131.146.200/chess
 
 ## Dev - Client Install
 Client is a simple AngularJS (v4) app using a raw Web Socket client. Works only on modern browsers.

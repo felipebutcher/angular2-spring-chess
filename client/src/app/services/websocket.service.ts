@@ -33,7 +33,7 @@ export class $WebSocket  {
     if (isDevMode()) {
       this.url = "ws://localhost:8088/game";
     }else {
-      this.url = "ws://cam.dynadrop.com:8088/game";
+      this.url = "ws://104.131.146.200:8088/game";
     }
     var match = new RegExp('wss?:\/\/').test(this.url);
     if (!match) {
