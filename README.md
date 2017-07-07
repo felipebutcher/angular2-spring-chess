@@ -23,6 +23,8 @@ cd server/
 ```
 
 ## Prod - Client Deploy
+Edit index.html changing base href to "/chess" or whatever you deployed.
+Ignore this if deployed in the root of domain.
 ```
 cd client/
 ng build --prod
@@ -32,8 +34,6 @@ cp dist/* [the chess folder in your Apache's www html folder]
 ## Prod - Server Deploy
 Edit start.sh to change java memory usage.
 mvn package will not build if tests fail.
-#Change production to true in client/src/environments/environment.ts.
-#Change websocket url in src/app/services/websocket.service.ts
 ```
 cd server/
 mvn package
