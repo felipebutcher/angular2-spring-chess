@@ -5,7 +5,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.dynadrop.chess.model.Game;
 import com.dynadrop.chess.model.Board;
 import com.dynadrop.chess.model.Player;
@@ -22,7 +21,14 @@ import org.apache.log4j.Logger;
 public class GameHandler extends TextWebSocketHandler {
     static ArrayList<WebSocketSession> sessions;
     static GameController gameController;
+    static Gson gson;
     private static final Logger logger = Logger.getLogger(GameHandler.class);
+    private static final String NEW_GAME = "newGame";
+    private static final String JOIN_GAME = "joinGame";
+    private static final String MOVE = "move";
+    private static final String PROMOTE = "doPromote";
+    private static final String REQUEST_UPDATE = "requestUpdate";
+    private static final String REQUEST_POSSIBLE_MOVEMENTS = "requestPossibleMovements";
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -32,52 +38,27 @@ public class GameHandler extends TextWebSocketHandler {
       if (this.sessions == null) {
         this.sessions = new ArrayList<WebSocketSession>();
       }
+      if (gson == null) {
+        gson = new Gson();
+      }
       this.addSession(session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
+      if ("CLOSE".equalsIgnoreCase(textMessage.getPayload())) {
+        session.close();
+      }
       try {
-        Gson gson = new Gson();
-        Message message = gson.fromJson(textMessage.getPayload(), Message.class);
+        Message message = this.gson.fromJson(textMessage.getPayload(), Message.class);
         logger.info("Message received: " + textMessage.getPayload());
-        if ("CLOSE".equalsIgnoreCase(textMessage.getPayload())) {
-          session.close();
-        }else if ("newGame".equals(message.action)) {
-          this.gameController.addGame(message.gameUUID, session.getId());
-          Game game = this.gameController.getGameByUUID(message.gameUUID);
-          this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(game)));
-        }else {
-          ReturnMessage returnMessage = new ReturnMessage();
-          if ("joinGame".equals(message.action)) {
-            Player assignedPlayer = this.gameController.joinGame(message.gameUUID, message.playerUUID, session.getId());
-            returnMessage.type = "joinGame";
-            returnMessage.assignedPlayer = assignedPlayer;
-            returnMessage.requestUUID = message.requestUUID;
-            this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
-          }else if ("move".equals(message.action)){
-            if (this.gameController.movePiece(message.gameUUID, message.movement)) {
-              returnMessage.type = "updateBoard";
-              returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
-              this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
-            }
-          }else if ("doPromote".equals(message.action)){
-            this.gameController.doPromote(message.gameUUID, message.promoteTo);
-            returnMessage.type = "updateBoard";
-            returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
-            this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
-          }else if ("requestUpdate".equals(message.action)) {
-            returnMessage.type = "updateBoard";
-            returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
-            this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
-          }else if ("requestPossibleMovements".equals(message.action)) {
-            Movement possibleMovements[] = this.gameController.requestPossibleMovements(message.gameUUID, message.movement.getPosition1());
-            if (possibleMovements != null) {
-              returnMessage.type = "possibleMovements";
-              returnMessage.possibleMovements = possibleMovements;
-              this.sendMessageToAllSessions(message.gameUUID, new TextMessage(gson.toJson(returnMessage)));
-            }
-          }
+        switch(message.action) {
+          case NEW_GAME: this.newGame(message, session); break;
+          case JOIN_GAME: this.joinGame(message, session); break;
+          case MOVE: this.move(message); break;
+          case PROMOTE: this.promote(message); break;
+          case REQUEST_UPDATE: this.requestUpdate(message); break;
+          case REQUEST_POSSIBLE_MOVEMENTS: this.requestPossibleMovements(message); break;
         }
       }catch (Exception e) {
         logger.error("EXCEPTION OCURRED");
@@ -85,7 +66,7 @@ public class GameHandler extends TextWebSocketHandler {
       }
     }
 
-    private void sendMessageToAllSessions(String gameUUID, TextMessage message) throws IOException {
+    private void sendMessage(String gameUUID, TextMessage message) throws IOException {
       ArrayList<String> webSocketSessionIds = this.gameController.getWebSocketSessionIdsByGame(gameUUID);
       for (WebSocketSession session: this.sessions) {
         for (String id: webSocketSessionIds) {
@@ -94,9 +75,7 @@ public class GameHandler extends TextWebSocketHandler {
               System.out.println("sending message to: "+id);
               session.sendMessage(message);
             }
-          } catch (Exception e) {
-            //logger.error("Error sending message", e);
-          }
+          } catch (Exception e) { }
         }
       }
     }
@@ -110,6 +89,55 @@ public class GameHandler extends TextWebSocketHandler {
       }
       if (!exists) {
         this.sessions.add(newSession);
+      }
+    }
+
+    private void newGame(Message message, WebSocketSession session) throws IOException {
+      this.gameController.addGame(message.gameUUID, session.getId());
+      Game game = this.gameController.getGameByUUID(message.gameUUID);
+      this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(game)));
+    }
+
+    private void joinGame(Message message, WebSocketSession session) throws IOException {
+      Player assignedPlayer = this.gameController.joinGame(message.gameUUID, message.playerUUID, session.getId());
+      ReturnMessage returnMessage = new ReturnMessage();
+      returnMessage.type = "joinGame";
+      returnMessage.assignedPlayer = assignedPlayer;
+      returnMessage.requestUUID = message.requestUUID;
+      this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(returnMessage)));
+    }
+
+    private void move(Message message) throws IOException, Exception {
+      if (this.gameController.movePiece(message.gameUUID, message.movement)) {
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.type = "updateBoard";
+        returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
+        this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(returnMessage)));
+      }
+    }
+
+    private void promote(Message message) throws Exception {
+      this.gameController.doPromote(message.gameUUID, message.promoteTo);
+      ReturnMessage returnMessage = new ReturnMessage();
+      returnMessage.type = "updateBoard";
+      returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
+      this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(returnMessage)));
+    }
+
+    private void requestUpdate(Message message) throws IOException {
+      ReturnMessage returnMessage = new ReturnMessage();
+      returnMessage.type = "updateBoard";
+      returnMessage.game = this.gameController.getGameByUUID(message.gameUUID);
+      this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(returnMessage)));
+    }
+
+    private void requestPossibleMovements(Message message) throws IOException {
+      Movement possibleMovements[] = this.gameController.requestPossibleMovements(message.gameUUID, message.movement.getPosition1());
+      if (possibleMovements != null) {
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.type = "possibleMovements";
+        returnMessage.possibleMovements = possibleMovements;
+        this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(returnMessage)));
       }
     }
 
