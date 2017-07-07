@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from "rxjs/Observable";
 import {Scheduler} from "rxjs/Rx";
 import {Subject} from "rxjs/Subject";
+import {isDevMode} from '@angular/core';
 
 
 @Injectable()
@@ -26,12 +27,14 @@ export class $WebSocket  {
   private dataStream: Subject<any>;
   private internalConnectionState: number;
   private config: WebSocketConfig;
-  private url: string = "ws://localhost:8088/game";
-  //you can use this one for testing your client
-  //private url: string = "ws://cam.dynadrop.com:8088/game";
-
+  private url: string;
 
   constructor(private protocols?:Array<string>) {
+    if (isDevMode()) {
+      this.url = "ws://localhost:8088/game";
+    }else {
+      this.url = "ws://cam.dynadrop.com:8088/game";
+    }
     var match = new RegExp('wss?:\/\/').test(this.url);
     if (!match) {
       throw new Error('Invalid url provided');
