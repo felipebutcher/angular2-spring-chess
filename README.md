@@ -4,6 +4,8 @@ This is a Chess game using AngularJS (v4) as client and Spring Boot as server ru
 
 The app is deployed here: http://104.131.146.200/chess
 
+The app doesn't have AI so you must send the game's URL to another human being or open in a different browser to test yourself.
+
 ## Dev - Client Install
 Client is a simple AngularJS (v4) app using a raw Web Socket client. Works only on modern browsers.
 ```
