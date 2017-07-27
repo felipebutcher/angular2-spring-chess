@@ -10,16 +10,15 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 
 
-
 public class GameController {
   private static final Logger logger = Logger.getLogger(GameController.class);
 
   public GameController() {
+
   }
 
-  public void addGame(String gameUUID, String sessionId) {
+  public void addGame(String gameUUID) {
     Game game = new Game(gameUUID);
-    game.addWebSocketSessionId(sessionId);
     logger.info(game.getBoard());
     Storage.put(game, gameUUID);
   }
@@ -28,9 +27,8 @@ public class GameController {
     return (Game) Storage.get(uuid);
   }
 
-  public Player joinGame(String gameUUID, String playerUUID, String sessionID) {
+  public Player joinGame(String gameUUID, String playerUUID) {
     Game game = this.getGameByUUID(gameUUID);
-    game.addWebSocketSessionId(sessionID);
     if (game == null) {
       return null;
     }
@@ -88,14 +86,6 @@ public class GameController {
       return (Movement[])allPossibleMovements.toArray(new Movement[allPossibleMovements.size()]);
     }
     return null;
-  }
-
-  public ArrayList<String> getWebSocketSessionIdsByGame(String gameUUID) {
-    Game game = this.getGameByUUID(gameUUID);
-    if (game == null) {
-      return null;
-    }
-    return game.getWebSocketSessionIds();
   }
 
 }

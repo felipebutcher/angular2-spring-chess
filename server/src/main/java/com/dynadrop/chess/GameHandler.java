@@ -13,15 +13,17 @@ import com.dynadrop.chess.websocket.bean.Message;
 import com.dynadrop.chess.websocket.bean.ReturnMessage;
 import com.dynadrop.chess.model.Movement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.io.IOException;
 import org.apache.log4j.Logger;
 
 
 @Component
 public class GameHandler extends TextWebSocketHandler {
-    static ArrayList<WebSocketSession> sessions;
-    static GameController gameController;
-    static Gson gson;
+    private static ArrayList<WebSocketSession> sessions;
+    private static HashMap<String, ArrayList<String>> webSocketSessionIdsByGame;
+    private static GameController gameController;
+    private static Gson gson;
     private static final Logger logger = Logger.getLogger(GameHandler.class);
     private static final String NEW_GAME = "newGame";
     private static final String JOIN_GAME = "joinGame";
@@ -33,7 +35,7 @@ public class GameHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
       if (this.gameController == null) {
-          this.gameController = new GameController();
+        this.gameController = new GameController();
       }
       if (this.sessions == null) {
         this.sessions = new ArrayList<WebSocketSession>();
@@ -42,6 +44,9 @@ public class GameHandler extends TextWebSocketHandler {
         gson = new Gson();
       }
       this.addSession(session);
+      if (this.webSocketSessionIdsByGame == null) {
+        this.webSocketSessionIdsByGame = new HashMap<String, ArrayList<String>>();
+      }
     }
 
     @Override
@@ -67,7 +72,7 @@ public class GameHandler extends TextWebSocketHandler {
     }
 
     private void sendMessage(String gameUUID, TextMessage message) throws IOException {
-      ArrayList<String> webSocketSessionIds = this.gameController.getWebSocketSessionIdsByGame(gameUUID);
+      ArrayList<String> webSocketSessionIds = this.getWebSocketSessionIdsByGame(gameUUID);
       for (WebSocketSession session: this.sessions) {
         for (String id: webSocketSessionIds) {
           try {
@@ -93,18 +98,37 @@ public class GameHandler extends TextWebSocketHandler {
     }
 
     private void newGame(Message message, WebSocketSession session) throws IOException {
-      this.gameController.addGame(message.gameUUID, session.getId());
+      this.gameController.addGame(message.gameUUID);
+      this.addWebSocketSessionIdToGame(message.gameUUID, session.getId());
       Game game = this.gameController.getGameByUUID(message.gameUUID);
       this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(game)));
     }
 
     private void joinGame(Message message, WebSocketSession session) throws IOException {
-      Player assignedPlayer = this.gameController.joinGame(message.gameUUID, message.playerUUID, session.getId());
+      Player assignedPlayer = this.gameController.joinGame(message.gameUUID, message.playerUUID);
+      this.addWebSocketSessionIdToGame(message.gameUUID, session.getId());
       ReturnMessage returnMessage = new ReturnMessage();
       returnMessage.type = "joinGame";
       returnMessage.assignedPlayer = assignedPlayer;
       returnMessage.requestUUID = message.requestUUID;
       this.sendMessage(message.gameUUID, new TextMessage(this.gson.toJson(returnMessage)));
+    }
+
+    private void addWebSocketSessionIdToGame(String gameUUID, String sessionId) {
+      if (this.webSocketSessionIdsByGame.get(gameUUID) == null) {
+        this.webSocketSessionIdsByGame.put(gameUUID, new ArrayList<String>());
+      }
+      if (!this.webSocketSessionIdsByGame.get(gameUUID).contains(sessionId)) {
+        this.webSocketSessionIdsByGame.get(gameUUID).add(sessionId);
+      }
+    }
+
+    public ArrayList<String> getWebSocketSessionIdsByGame(String gameUUID) {
+      Game game = this.gameController.getGameByUUID(gameUUID);
+      if (game == null) {
+        return null;
+      }
+      return this.webSocketSessionIdsByGame.get(gameUUID);
     }
 
     private void move(Message message) throws IOException, Exception {

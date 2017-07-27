@@ -21,7 +21,6 @@ public class Game implements Serializable {
   private Movement lastMovement;
   private Piece lastPieceAtPosition1;
   private Piece lastPieceAtPosition2;
-  private static ArrayList<String> webSocketSessionIds;
   private Date dateStarted;
 
   public static final int STARTED = 0;
@@ -35,14 +34,7 @@ public class Game implements Serializable {
     this.status = STARTED;
     this.turnColor = Piece.WHITE;
     this.isPromotion = false;
-    this.webSocketSessionIds = new ArrayList<String>();
     this.dateStarted = new Date();
-  }
-
-  public boolean isOlderThenOneDay() {
-    long MILLIS_PER_DAY = 24 * 60 * 60 * 1000L;
-    Date dateNow = new Date();
-    return Math.abs(this.dateStarted.getTime() - dateNow.getTime()) > MILLIS_PER_DAY;
   }
 
   public Board getBoard() {
@@ -157,22 +149,6 @@ public class Game implements Serializable {
 
   public int getTurnColor() {
     return this.turnColor;
-  }
-
-  public ArrayList<String> getWebSocketSessionIds() {
-    return this.webSocketSessionIds;
-  }
-
-  public void addWebSocketSessionId(String webSocketSessionId) {
-    boolean exists = false;
-    for (String id: this.webSocketSessionIds) {
-      if (id.equals(webSocketSessionId)) {
-        exists = true;
-      }
-    }
-    if (!exists) {
-      this.webSocketSessionIds.add(webSocketSessionId);
-    }
   }
 
   public boolean movePiece(Movement movement) throws Exception {
