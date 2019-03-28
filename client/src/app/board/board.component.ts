@@ -238,7 +238,7 @@ export class BoardComponent implements OnInit {
 
   playBeep() {
     let audio = new Audio();
-    audio.src = "http://cam.dynadrop.com/chess/chessmove.mp3";
+    audio.src = "http://104.131.146.200/chess/chessmove.mp3";
     audio.load();
     audio.play();
   }
