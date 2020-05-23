@@ -1,1 +1,8 @@
 client/dist
+server/.gradle
+server/bin
+server/logs
+server/.settings
+server/.classpath
+server/.project
+server/games
