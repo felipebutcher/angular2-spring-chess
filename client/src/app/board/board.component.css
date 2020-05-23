@@ -15,11 +15,11 @@ table.chess_table tr td {
 
 table.chess_table tr:nth-child(odd) td:nth-child(odd),
 table.chess_table tr:nth-child(even) td:nth-child(even){
- background-color: #956518;
+ background-color: #d9b778;
 }
 table.chess_table tr:nth-child(odd) td:nth-child(even),
 table.chess_table tr:nth-child(even) td:nth-child(odd){
- background-color: #d9b778;
+ background-color: #956518;
 }
 table.chess_table tr td.WP { /* blancs */
  color: rgb(255, 255, 255);
